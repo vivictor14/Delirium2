@@ -35,7 +35,7 @@ move(L, _, _, _, Pos, Size, 0, _, _, _, _, Action) :- member(20, L), meilleureOp
 move(L, _, _, _, Pos, Size, 1, _, _, _, _, Action) :- member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
 
 % Errer
-move(L, _, X, Y, Pos, Size, _, _, _, _, _, Action) :- errer(L, X, Y, Pos, Size, Action).
+move(L, _, X, Y, Pos, Size, _, _, _, VPx, VPy, Action) :- errer(L, X, Y, Pos, Size, VPx, VPy, Action).
 
 % Meilleure option possible
 meilleureOption(L, Size, Pos, Element, Pos1) :- allPosition(Element, L, Positions), seDirigerVers:couts(L, Pos, Size, Positions, Rangs), meilleureOp(Positions, Rangs, Pos1).
