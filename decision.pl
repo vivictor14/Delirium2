@@ -8,8 +8,8 @@
 
 */
 
-:- use_module( seDirigerVers ).
-:- use_module( errer ).
+%:- use_module( seDirigerVers ).
+%:- use_module( errer ).
 
 :- module( decision, [
 	init/1,
@@ -29,20 +29,21 @@ init(_).
 % move( Action ) :- Action is 1+random( 4 ), write(Action),nl.
 
 % Se diriger vers la sortie
-move(L, _, X, Y, Pos, Size, 0, _, _, VPx, VPy, Action) :- member(20, L), positionLaPlusProche(L, Size, Pos, 20, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
+move(L, _, _, _, Pos, Size, 0, _, _, _, _, Action) :- member(20, L), meilleureOption(L, Size, Pos, 20, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
 
 % Se diriger vers un diamant
-move(L, _, X, Y, Pos, Size, 1, _, _, VPx, VPy, Action) :- member(2, L), positionLaPlusProche(L, Size, Pos, 2, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
+move(L, _, _, _, Pos, Size, 1, _, _, _, _, Action) :- member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
 
 % Errer
 move(L, _, X, Y, Pos, Size, _, _, _, VPx, VPy, Action) :- errer(L, X, Y, Pos, Size, VPx, VPy, Action).
 
-% Position la plus proche
-positionLaPlusProche(L, Size, Pos, Element, Pos1) :- allPosition(Element, L, Positions), positionLPP(Pos, Size, Positions, Pos1).
-positionLPP(Pos, Size, Positions, Pos1) :- positionLPP(Pos, Size, Positions, Size, Pos1).
-positionLPP(_, _, [], _, _).
-positionLPP(Pos, Size, [X|R], PosInit, PosPP) :- abs(Pos - (X mod Size)) <= PosInit, PosInit is X, PosPP is X, positionLPP(Pos, Size, R, PosInit, PosPP).
-positionLPP(Pos, Size, [X|R], PosInit, PosPP) :- positionLPP(Pos, Size, R, PosInit, PosPP).
+% Meilleure option possible
+meilleureOption(L, Size, Pos, Element, Pos1) :- allPosition(Element, L, Positions), seDirigerVers:couts(L, Pos, Size, Positions, Rangs), meilleureOp(Positions, Rangs, Pos1).
+
+meilleureOp([X|Positions], [Y|Rangs], Pos1) :- meilleureOp(Positions, Rangs, X, Y, Pos1).
+meilleureOp([], [], Pos, _, Pos).
+meilleureOp([X|P], [Y|R], _, Min, Pos) :- Y < Min, !, meilleureOp(P, R, X, Y, Pos).
+meilleureOp([_|P], [_|R], Pos0, Min, Pos) :- meilleureOp(P, R, Pos0, Min, Pos).
 
 % Positions de toutes les occurences de l'élément
 allPosition(_, [], _, []).
