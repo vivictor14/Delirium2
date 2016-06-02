@@ -1,8 +1,57 @@
 :- module( seDirigerVers, [
+	init/1,
 	seDirigerVers/5
 ] ).
 
+% Init variables globales
+init(_):- nb_setval(openList,[]), nb_setval(closedList,[]).
 
+% Predicats A*
+/* 
+  a_star(+CourantState, +FinalState, -Path) 
+*/
+% openList vide pas de solution
+a_star([],_,_):-
+	nb_getval(openList, []),
+	!.
+	
+% etat final atteint
+a_star([X,Y],[X,Y],_):-
+	nb_getval(openList, [[_, [X,Y])
+
+
+a_star([X,Y],[XFinal,YFinal],Path):- 
+
+/* 
+  getBestNodeFromOpenList(-Node) 
+*/
+getBestNodeFromOpenList(_).
+
+/* 
+  extractBestNodeFromOpenList(-Node) 
+*/
+extractBestNodeFromOpenList(_).
+
+/* 
+  buildPath(+State, -Path) 
+*/
+buildPath(_,_).
+
+/* 
+  insertAllStatesInOpenList(+Node, +FinalState, +AccessibleStatesList) 
+*/
+insertAllStatesInOpenList(_,_,_).
+
+% Predicats A* spécifique problème
+/* 
+  getHeuristicValue(+XATester,+YATester,+XFinal,+YFinal,-V)
+*/
+getHeuristicValue([XATester,YATester],[XFinal,YFinal],V):- V is sqrt((XFinal-XATester)*(XFinal-XATester)+(YATester-YFinal)*(YATester-YFinal)).
+
+/*
+  getAllAccessibleStates(+State, -AccessibleStatesList)
+*/
+getAllAccessibleStates(_,_).
 
 
 % Type de l'élément à la position indiquée
