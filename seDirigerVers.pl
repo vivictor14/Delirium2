@@ -22,4 +22,3 @@ positionLPP(Pos, Size, Positions, Pos1) :- positionLPP(Pos, Size, Positions, Siz
 positionLPP(_, _, [], _, _).
 positionLPP(Pos, Size, [X|R], PosInit, PosPP) :- abs(Pos - (X mod Size)) <= PosInit, PosInit is X, PosPP is X, positionLPP(Pos, Size, R, PosInit, PosPP).
 positionLPP(Pos, Size, [X|R], PosInit, PosPP) :- positionLPP(Pos, Size, R, PosInit, PosPP).
-rang(Pos1, Pos2, Size) :- 
