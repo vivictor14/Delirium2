@@ -11,22 +11,78 @@ init(_):- nb_setval(openList,[]), nb_setval(closedList,[]).
   a_star(+CourantState, +FinalState, -Path) 
 */
 % openList vide pas de solution
-a_star([],_,_):-
+a_star(_,_,_,[],_,_):-
 	nb_getval(openList, []),
 	!.
 	
 % etat final atteint
-a_star([X,Y],[X,Y],_):-
-	nb_getval(openList, [[_, [X,Y])
+a_star(_,_,_,[X,Y],[X,Y],_):-
+	nb_getval(openList, [[_], [X,Y]])
 
 
-a_star([X,Y],[XFinal,YFinal],Path):- 
+a_star(Liste,PosMineur,Size,[X,Y],[XFinal,YFinal],Path):-
+
+	nb_getval(openList, [[Chemin,G,Cout,Pere]|CheminRestant]),
+	nb_getval(closedList, ClosedList),
+	
+	Chemin = [X,Y],
+	nb_setval(openList,CheminRestant),
+	append(closedList,[Chemin],closedListFinal),
+	nb_setval(closedList,closedListFinal),
+	trouverSuccesseur(PosMineur,Chemin,Size,Liste,Successeur),
+	ajouterChemin
 
 /* 
   getBestNodeFromOpenList(-Node) 
 */
 getBestNodeFromOpenList(_).
 
+% trouver les successeur 
+trouverSuccesseur(PosMineur,Chemin,Size,Liste,Successeur):-
+	movementD(PosMineur,Liste,Chemin,X1),
+	movementH(PosMineur,Liste,Size,Chemin,X2),
+	movementG(PosMineur,Liste,Size,Chemin,X3),
+	movementB(PosMineur,Liste,Chemin,X4),
+	append(X1,X2,Successeur),
+	append(X3,Successeur,Successeur),
+	append(X4,Successeur,Successeur).
+
+movementD(PosMineur,List,Chemin,X):-
+	Chemin = [XChemin,YChemin],
+	Pos is PosMineur +1,
+	possibleMove(List,Pos),
+	XNew is XChemin+1,
+	X is [XNew,Y].
+movementD(PosMineur,List,Chemin,X):-
+	X is [].
+	
+movementH(PosMineur,List,Size,Chemin,X):-
+	Chemin = [XChemin,YChemin],
+	Pos is PosMineur - Size,
+	possibleMove(List,Pos),
+	YNew is YNew+1,
+	X is [X,YNew].
+movementH(PosMineur,List,Chemin,X):-
+	X is [].
+	
+movementB(PosMineur,List,Chemin,X):-
+	Chemin = [XChemin,YChemin],
+	Pos is PosMineur + Size,
+	possibleMove(List,Pos),
+	YNew is YNew-1,
+	X is [X,YNew].
+movementB(PosMineur,List,Size,Chemin,X):-
+	X is [].
+	
+movementG(PosMineur,List,Chemin,X):-
+	Chemin = [XChemin,YChemin],
+	Pos is PosMineur -1,
+	possibleMove(List,Pos),
+	XNew is XChemin-1,
+	X is [XNew,Y].
+movementG(PosMineur,List,Chemin,X):-
+	X is [].
+	
 /* 
   extractBestNodeFromOpenList(-Node) 
 */
