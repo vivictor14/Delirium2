@@ -118,9 +118,20 @@ movementG(PosMineur,List,Chemin,X):-
 extractBestNodeFromOpenList(_).
 
 /* 
-  buildPath(+State, -Path) 
+  buildPath(+Fils,+Pere,+PathPrecedent,-NewPath) 
 */
-buildPath(_,_).
+buildPath(Fils,_,Path,NPath):-
+	Path = [],
+	NPath is [Fils].
+buildPath(Fils,Pere,Path,NPath):-
+	Path = [[X,Y]|Reste],
+	Pere = [X,Y],
+	append(Pere,Path,NPath).
+buildPath(Fils,Pere,Path,NPath):-
+	Path = [[X,Y]|Reste],
+	Pere \= [X,Y],
+	buildPath(Fils,Pere,Reste,NPath).
+
 
 /* 
   insertAllStatesInOpenList(+Node, +FinalState, +AccessibleStatesList) 
