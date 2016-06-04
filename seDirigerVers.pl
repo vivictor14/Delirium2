@@ -30,7 +30,31 @@ a_star(Liste,PosMineur,Size,[X,Y],[XFinal,YFinal],Path):-
 	append(closedList,[Chemin],closedListFinal),
 	nb_setval(closedList,closedListFinal),
 	trouverSuccesseur(PosMineur,Chemin,Size,Liste,Successeur),
-	ajouterChemin
+	ajouterChemin(Chemin,Successeur,Cout),
+	
+	
+ajouterChemin(_,[],_).	
+% test si il n'est pas dans closed et open
+ajouterChemin(Chemin,[Successeur|Reste],Cout):-
+	nb_getval(openList, openList),
+	nb_getval(closedList, ClosedList),
+	nonOpen(Successeur,openList),
+	not(member(Successeur,closeList)),
+	% ajout
+	
+% test si g(y) > g(N.e)+c(N.e,y)
+ajouterChemin(Chemin,[Successeur|Reste],Cout):-
+
+% aucun des deux critères n'est possible, ont passe au successeur suivant
+ajouterChemin(Chemin,[_|Reste],Cout):-
+	ajouterChemin(Chemin,Reste,Cout).
+
+nonOpen(_,[]).
+nonOpen(Successeur,[[Chemin,_,_,_]|CheminRestant]):-
+	Successeur \= Chemin,
+	nonOpen(Successeur,CheminRestant).
+	
+	
 
 /* 
   getBestNodeFromOpenList(-Node) 
