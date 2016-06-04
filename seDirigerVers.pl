@@ -31,6 +31,8 @@ a_star(Liste,PosMineur,Size,[X,Y],[XFinal,YFinal],Path):-
 	nb_setval(closedList,closedListFinal),
 	trouverSuccesseur(PosMineur,Chemin,Size,Liste,Successeur),
 	ajouterChemin(Chemin,Successeur,Cout),
+	nb_getval(openList, [[Chemin,_,_,_]|_]),
+	a_star(Liste,[X,Y],Chemin,[XFinal,YFinal],Path).
 	
 	
 ajouterChemin(_,[],_).	
@@ -40,7 +42,7 @@ ajouterChemin(Chemin,[Successeur|Reste],Cout):-
 	nb_getval(closedList, ClosedList),
 	nonOpen(Successeur,openList),
 	not(member(Successeur,closeList)),
-	% ajout
+	% ajout trié !
 	
 % test si g(y) > g(N.e)+c(N.e,y)
 ajouterChemin(Chemin,[Successeur|Reste],Cout):-
