@@ -126,7 +126,7 @@ buildPath(Fils,_,Path,NPath):-
 buildPath(Fils,Pere,Path,NPath):-
 	Path = [[X,Y]|Reste],
 	Pere = [X,Y],
-	append(Pere,Path,NPath).
+	append(Fils,Path,NPath).
 buildPath(Fils,Pere,Path,NPath):-
 	Path = [[X,Y]|Reste],
 	Pere \= [X,Y],
