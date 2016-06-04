@@ -30,26 +30,29 @@ a_star(Liste,PosMineur,Size,[X,Y],[XFinal,YFinal],Path):-
 	append(closedList,[Chemin],closedListFinal),
 	nb_setval(closedList,closedListFinal),
 	trouverSuccesseur(PosMineur,Chemin,Size,Liste,Successeur),
-	ajouterChemin(Chemin,Successeur,Cout),
+	ajouterChemin(Chemin,Successeur,[XFinal,YFinal],Cout,G),
 	nb_getval(openList, [[Chemin,_,_,_]|_]),
 	a_star(Liste,[X,Y],Chemin,[XFinal,YFinal],Path).
 	
 	
-ajouterChemin(_,[],_).	
+ajouterChemin(_,[],_,_,_).	
 % test si il n'est pas dans closed et open
-ajouterChemin(Chemin,[Successeur|Reste],Cout):-
+ajouterChemin(Chemin,[Successeur|Reste],Fin,Cout,G):-
 	nb_getval(openList, openList),
 	nb_getval(closedList, ClosedList),
 	nonOpen(Successeur,openList),
 	not(member(Successeur,closeList)),
+	getHeuristicValue(Successeur,Fin,Y),
+	F is G + 1 + Y,
+	NouvelleDonnee is [Successeur,Y,F,Chemin],
 	% ajout trié !
 	
 % test si g(y) > g(N.e)+c(N.e,y)
-ajouterChemin(Chemin,[Successeur|Reste],Cout):-
+ajouterChemin(Chemin,[Successeur|Reste],Fin,Cout,G):-
 
 % aucun des deux critères n'est possible, ont passe au successeur suivant
-ajouterChemin(Chemin,[_|Reste],Cout):-
-	ajouterChemin(Chemin,Reste,Cout).
+ajouterChemin(Chemin,[_|Reste],Fin,Cout,G):-
+	ajouterChemin(Chemin,Reste,Fin,Cout,G).
 
 nonOpen(_,[]).
 nonOpen(Successeur,[[Chemin,_,_,_]|CheminRestant]):-
