@@ -120,9 +120,7 @@ extractBestNodeFromOpenList(_).
 /* 
   buildPath(+Fils,+Pere,+PathPrecedent,-NewPath) 
 */
-buildPath(Fils,_,Path,NPath):-
-	Path = [],
-	NPath is [Fils].
+buildPath(Fils,_,[],[Fils]).
 buildPath(Fils,Pere,Path,NPath):-
 	Path = [[X,Y]|Reste],
 	Pere = [X,Y],
