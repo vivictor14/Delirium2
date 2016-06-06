@@ -28,14 +28,18 @@ init(_).
 % move( _,_, _,_,_, _, _, _,_, _,_, Action ) :- Action is random( 5 ), write(Action),nl.
 % move( Action ) :- Action is 1+random( 4 ), write(Action),nl.
 
+
+% Mettre à jour le labyrinthe avant de choisir le mouvement
+move(L, _, X, Y, Pos, Size, CGE, _, _, VPx, VPy, Action) :- nb_getval(labyrinthe, Laby), updateLaby(Laby, L, X, Y, Pos, Size, VPx, VPy), nb_getval(labyrinthe, Laby1), move(L, X, Y, Pos ,Size, CGE, Laby1, Action).
+
 % Se diriger vers la sortie
-move(L, _, _, _, Pos, Size, 0, _, _, _, _, Action) :- member(20, L), meilleureOption(L, Size, Pos, 20, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
+move(L, X, Y, Pos, Size, 0, Laby, Action) :- member(20, L), premiereOccurence(Laby, 20, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Se diriger vers un diamant
-move(L, _, _, _, Pos, Size, 1, _, _, _, _, Action) :- member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), seDirigerVers(L, Pos, Size, Pos1, Action).
+move(L, X, Y, Pos, Size, CGE, Laby, Action) :- not(CGE = 0), member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), posToCoord(L, X, Y, Pos, Pos1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Errer
-move(L, _, X, Y, Pos, Size, _, _, _, VPx, VPy, Action) :- errer(L, X, Y, Pos, Size, VPx, VPy, Action).
+move(L, X, Y, Pos, Size, _, Laby, Action) :- errer(L, X, Y, Pos, Size, Laby, Action).
 
 % Meilleure option possible
 meilleureOption(L, Size, Pos, Element, Pos1) :- allPosition(Element, L, Positions), seDirigerVers:couts(L, Pos, Size, Positions, Rangs), meilleureOp(Positions, Rangs, Pos1).
@@ -50,3 +54,9 @@ allPosition(_, [], _, []).
 allPosition(Element, [X|R1], Pos, [Pos|Y]) :- Element = X, !, Pos1 is Pos + 1, allPosition(Element,R1,Pos1,Y).
 allPosition(Element, [_|R], Pos, Index) :- Pos1 is Pos + 1, allPosition(Element, R, Pos1, Index).
 allPosition(Element, L, Index) :- allPosition(Element, L, 0, Index).
+
+% Mise à jour du labyrinthe
+updateLaby().
+
+% Transformer position dans la liste en coordonnées dans le labyrinthe
+posToCoord().
