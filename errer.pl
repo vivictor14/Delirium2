@@ -4,16 +4,11 @@
 	errer/8
 ] ).
 
-% Se diriger vers le point inexploré le plus proche
-% A droite
-errer(L, X, Y, Pos, Size, VPx, VPy, 1) :- nb_getval(labyrinthe, Laby), premiereOccurenceDroite(Laby, X, Y, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, 1).
-% En haut
-errer(L, X, Y, Pos, Size, VPx, VPy, 2) :- nb_getval(labyrinthe, Laby), premiereOccurenceHaut(Laby, X, Y, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, 2).
-% A gauche
-errer(L, X, Y, Pos, Size, VPx, VPy, 3) :- nb_getval(labyrinthe, Laby), premiereOccurenceGauche(Laby, X, Y, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, 3).
-% En bas
-errer(L, X, Y, Pos, Size, VPx, VPy, 4) :- nb_getval(labyrinthe, Laby), premiereOccurenceBas(Laby, X, Y, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, 4).
+% Se diriger vers un endroit inexploré
+errer(L, X, Y, Pos, Size, VPx, VPy, Action) :- nb_getval(labyrinthe, Laby), premiereOccurence(Laby, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
-% Trouver la première occurence d'un élément à droite du mineur
-premiereOccurenceDroite([L|Laby], X, 0, Element, X1, Y1) :- member(-1, L).
-premiereOccurenceDroite([L|Laby], X, Y, Element, X1, Y1) :- premiereOccurence(Laby, X, Y, Element, X1, Y1).
+% Trouver la première occurence d'un élément dans le labyrinthe
+premiereOccurence([[Element|_]|_], Element, X, Y, X, Y).
+premiereOccurence([[]|R], Element, X0, Y0, X, Y) :- Y1 is Y0 + 1, premiereOccurence(R, Element, X0, Y1, X, Y).
+premiereOccurence([[_|R1]|R2], X0, Y0, X, Y) :- X1 is X0 + 1, premiereOccurence([[R1]|R2], X1, Y0, X, Y).
+premiereOccurence(Laby, Element, X, Y) :- premiereOccurence(Laby, 1, 1, X, Y).
