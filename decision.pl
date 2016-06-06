@@ -36,7 +36,7 @@ move(L, _, X, Y, Pos, Size, CGE, _, _, VPx, VPy, Action) :- nb_getval(labyrinthe
 move(L, X, Y, Pos, Size, 0, Laby, Action) :- member(20, L), premiereOccurence(Laby, 20, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Se diriger vers un diamant
-move(L, X, Y, Pos, Size, CGE, Laby, Action) :- not(CGE = 0), member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), posToCoord(X, Y, Pos, Size, Pos1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
+move(L, X, Y, Pos, Size, CGE, _, Action) :- not(CGE = 0), member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), posToCoord(X, Y, Pos, Size, Pos1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Errer
 move(L, X, Y, Pos, Size, _, Laby, Action) :- errer(L, X, Y, Pos, Size, Laby, Action).
@@ -56,8 +56,17 @@ allPosition(Element, [_|R], Pos, Index) :- Pos1 is Pos + 1, allPosition(Element,
 allPosition(Element, L, Index) :- allPosition(Element, L, 0, Index).
 
 % Mise à jour du labyrinthe
-updateLaby().
+updateLaby([], L, X, Y, Pos, Size, VPx, VPy) :- initLaby(L, X, Y, Pos, Size, VPx, VPy, Laby), nb_setval(labyrinthe, Laby).
+
+% Initialisation du labyrinthe
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|_]|_], Xe, Ye) :- posToCoord(X, Y, Pos, Size, ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), X1, Y1), Xe = X1, Ye = Y1, elemAtPos(L, Pos + (Xe - X) + Size * (Ye - Y), E).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[]|R2], Xe, Ye) :- Ye1 is Ye + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, R2, Xe, Ye1).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, Y1), Ye < Y1, posToCoord(X, Y, Pos, Size, ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), X2, Y2), Xe <= X2,  E is -1, Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, Y1), Xe < X1, E is -1, Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- elemAtPos(L, Pos + (Xe - X) + Size * (Ye - Y), E), Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+
 
 % Transformer position dans la liste en coordonnées dans le labyrinthe
 posToCoord(X, Y, Pos, Size, Pos1, X1, Y1) :- X1 is (X + (Pos1 mod Size) - (Pos mod Size)), Y1 is (Y + (Pos1 // Size) - (Pos // Size)).
 
+elemAtPos(
