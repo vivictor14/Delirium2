@@ -36,7 +36,7 @@ move(L, _, X, Y, Pos, Size, CGE, _, _, VPx, VPy, Action) :- nb_getval(labyrinthe
 move(L, X, Y, Pos, Size, 0, Laby, Action) :- member(20, L), premiereOccurence(Laby, 20, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Se diriger vers un diamant
-move(L, X, Y, Pos, Size, CGE, Laby, Action) :- not(CGE = 0), member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), posToCoord(L, X, Y, Pos, Pos1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
+move(L, X, Y, Pos, Size, CGE, Laby, Action) :- not(CGE = 0), member(2, L), meilleureOption(L, Size, Pos, 2, Pos1), posToCoord(X, Y, Pos, Size, Pos1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
 
 % Errer
 move(L, X, Y, Pos, Size, _, Laby, Action) :- errer(L, X, Y, Pos, Size, Laby, Action).
@@ -59,4 +59,5 @@ allPosition(Element, L, Index) :- allPosition(Element, L, 0, Index).
 updateLaby().
 
 % Transformer position dans la liste en coordonnées dans le labyrinthe
-posToCoord().
+posToCoord(X, Y, Pos, Size, Pos1, X1, Y1) :- X1 is (X + (Pos1 mod Size) - (Pos mod Size)), Y1 is (Y + (Pos1 // Size) - (Pos // Size)).
+
