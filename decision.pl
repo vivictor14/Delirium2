@@ -1,13 +1,8 @@
 /*
-
-
   Définition de l'IA du mineur
-
   Le prédicat move/12 est consulté à chaque itération du jeu.
-
-
 */
-
+/*
 %:- use_module( seDirigerVers ).
 %:- use_module( errer ).
 
@@ -17,7 +12,7 @@
 ] ).
 
 
-init(_).
+init(_).*/
 
 
 /*
@@ -59,14 +54,18 @@ allPosition(Element, L, Index) :- allPosition(Element, L, 0, Index).
 updateLaby([], L, X, Y, Pos, Size, VPx, VPy) :- initLaby(L, X, Y, Pos, Size, VPx, VPy, Laby), nb_setval(labyrinthe, Laby).
 
 % Initialisation du labyrinthe
-initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|_]|_], Xe, Ye) :- posToCoord(X, Y, Pos, Size, ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), X1, Y1), Xe = X1, Ye = Y1, elemAtPos(L, Pos + (Xe - X) + Size * (Ye - Y), E).
-initLaby(L, X, Y, Pos, Size, VPx, VPy, [[]|R2], Xe, Ye) :- Ye1 is Ye + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, R2, Xe, Ye1).
-initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, Y1), Ye < Y1, posToCoord(X, Y, Pos, Size, ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), X2, Y2), Xe <= X2,  E is -1, Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
-initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, Y1), Xe < X1, E is -1, Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
-initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- elemAtPos(L, Pos + (Xe - X) + Size * (Ye - Y), E), Xe1 is Xe + 1, initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|_]|_], Xe, Ye) :- posToCoord(X, Y, Pos, Size, ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), X1, Y1), Xe = X1, Ye = Y1, Pos1 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos1, E), write(1 + Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [_|R2], Xe, Ye) :- Pos1 is ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), posToCoord(X, Y, Pos, Size, Pos1, X2, _), Xe > X2, Ye1 is Ye + 1, write(2 + Ye), initLaby(L, X, Y, Pos, Size, VPx, VPy, R2, 0, Ye1).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, _, Y1), Ye < Y1, Pos1 is ((VPx * 2 + 1) * (VPy * 2 + 1) - 1), posToCoord(X, Y, Pos, Size, Pos1, X2, _), Xe =< X2,  E is -1, Xe1 is Xe + 1, write(3 + Ye), initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, _), Xe < X1, E is -1, Xe1 is Xe + 1, write(4 + Ye), initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
+initLaby(L, X, Y, Pos, Size, VPx, VPy, [[E|R1]|R2], Xe, Ye) :- Pos1 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos1, E), Xe1 is Xe + 1, write(5 + Ye), initLaby(L, X, Y, Pos, Size, VPx, VPy, [R1|R2], Xe1, Ye).
 
 
 % Transformer position dans la liste en coordonnées dans le labyrinthe
 posToCoord(X, Y, Pos, Size, Pos1, X1, Y1) :- X1 is (X + (Pos1 mod Size) - (Pos mod Size)), Y1 is (Y + (Pos1 // Size) - (Pos // Size)).
 
-elemAtPos(
+% Element à la position donnée
+elemAtPos([E|_], 0, E).
+elemAtPos([_|R], Pos, E) :- Pos1 is Pos - 1, elemAtPos(R, Pos1, E).
+
+%initLaby([ 1, 0, 1, 1, 2, 23, 1, 21, 2, 3, 2, 2, 0, 0, 0 ], 2, 1, 7, 5, 2, 1, Laby, 0, 0).
