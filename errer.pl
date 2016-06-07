@@ -1,8 +1,8 @@
-:- use_module( seDirigerVers ).
-
 :- module( errer, [
 	errer/4
 ] ).
+
+:- use_module( seDirigerVers ).
 
 % Se diriger vers un endroit inexploré
 errer(X, Y, Laby, Action) :- premiereOccurence(Laby, -1, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
