@@ -45,7 +45,7 @@ a_star(_,_,_,_,_):-
 	
 % etat final atteint par -1
 a_star([X,Y],_,Laby,Path,Cout):-
-	elemAtCoord(Laby, [X,Y], E),
+	elemAtCoord(Laby, X, Y, E),
 	E = -1,
 	buildPath([X,Y],Path,Cout).
 	
