@@ -1,11 +1,11 @@
 :- use_module( seDirigerVers ).
 
 :- module( errer, [
-	errer/9
+	errer/4
 ] ).
 
 % Se diriger vers un endroit inexploré
-errer(L, X, Y, Pos, Size, VPx, VPy, Laby, Action) :- premiereOccurence(Laby, -1, X1, Y1), seDirigerVers(L, X, Y, Pos, Size, X1, Y1, Action).
+errer(X, Y, Laby, Action) :- premiereOccurence(Laby, -1, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
 
 % Trouver la première occurence d'un élément dans le labyrinthe
 premiereOccurence([[Element|_]|_], Element, X, Y, X, Y).

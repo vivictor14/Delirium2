@@ -72,7 +72,6 @@ think( Stimulus, [Action] ) :-
 	splitList( Data,Percepts1,Data2,NbrPercepts ),
 	splitList( Data2,Percepts2,[],NbrPercepts ),
 	move( Percepts1,Percepts2,X,Y,Pos,Size,CGE,Energy,GEnergy,VPx,VPy,Action ).
-%	move( Action ).
 
 
 canGotoExit(0,1) :-
