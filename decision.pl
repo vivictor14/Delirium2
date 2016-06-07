@@ -3,18 +3,15 @@
   Le prédicat move/12 est consulté à chaque itération du jeu.
 */
 
-:- use_module( seDirigerVers ).
-:- use_module( errer ).
-
-
 :- module( decision, [
 	init/1,
 	move/12
 ] ).
-
+:- use_module(seDirigerVers).
+:- use_module(errer).
 
 % Initialise les tableaux de l'algorythme A*
-init(_) :- seDirigerVers:init_astar(_).
+init(_) :- nb_setval(labyrinthe, [[-1]]), seDirigerVers:init_astar(_).
 
 
 /*
@@ -47,13 +44,13 @@ updateLaby(L, X, Y, Pos, Size, OldLaby, [[E|R1]|R2], Xe, Ye) :- coordLastElement
 updateLaby(L, X, Y, Pos, Size, OldLaby, [[-1|R1]|R2], Xe, Ye) :- Xe1 is Xe + 1, updateLaby(L, X, Y, Pos, Size, OldLaby, [R1|R2], Xe1, Ye).
 
 % Meilleure option possible
-meilleureOption(X, Y, Laby, Elem, Action) :- meilleureOption(X, Y, Laby, 0, 0, Elem, 42, 0, Action).
+meilleureOption(X, Y, Laby, Elem, Action) :- meilleureOption(X, Y, Laby, Laby, 0, 0, Elem, 42, 0, Action).
 
-meilleureOption(X, Y, [[Elem]], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action), Cout =< Min.
-meilleureOption(_, _, [[_]], _, _, _, _, Action, Action), not(Action = 0).
-meilleureOption(X, Y, [[]|R2], X0, Y0, Elem, Min, Action0, Action) :- Y1 is Y0 + 1, meilleureOption(X, Y, R2, X0, Y1, Elem, Min, Action0, Action).
-meilleureOption(X, Y, [[Elem]|R1]|R2], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action1), Cout =< Min, X1 is X0 + 1, meilleureOption(X, Y, [R1|R2], X1, Y0, Elem, Cout, Action1, Action).
-meilleureOption(X, Y, [[_]|R1|R2], X0, Y0, Elem, Min, Action0, Action) :- X1 is X0 + 1, meilleureOption(X, Y, [R1|R2], X1, Y0, Elem, Min, Action0, Action).
+meilleureOption(X, Y, Laby, [[Elem]], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action), Cout =< Min.
+meilleureOption(_, _, _, [[_]], _, _, _, _, Action, Action) :- not(Action = 0).
+meilleureOption(X, Y, Laby, [[]|R2], X0, Y0, Elem, Min, Action0, Action) :- Y1 is Y0 + 1, meilleureOption(X, Y, Laby, R2, X0, Y1, Elem, Min, Action0, Action).
+meilleureOption(X, Y, Laby, [[Elem|R1]|R2], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action1), Cout =< Min, X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Cout, Action1, Action).
+meilleureOption(X, Y, Laby, [[_|R1]|R2], X0, Y0, Elem, Min, Action0, Action) :- X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Min, Action0, Action).
 
 % Transformer position dans la liste en coordonnées dans le labyrinthe
 posToCoord(X, Y, Pos, Size, Pos1, X1, Y1) :- X1 is (X + (Pos1 mod Size) - (Pos mod Size)), Y1 is (Y + (Pos1 // Size) - (Pos // Size)).
