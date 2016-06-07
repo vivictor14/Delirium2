@@ -10,7 +10,7 @@ init_astar(_):- nb_setval(openList,[]), nb_setval(closedList,[]).
 /* 
   a_star(+CourantState, +FinalState, +Labyrinth, -Path) 
 */
-% openList vide pas de solution
+% openList vide donner la solution grace a closeList
 a_star(_,_,_,_):-
 	nb_getval(openList, []),
 	!.
