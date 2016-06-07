@@ -4,16 +4,20 @@
 ] ).
 
 % Init variables globales
-init_astar(_):- nb_setval(openList,[]), nb_setval(closedList,[]).
+init_astar(Coordonnee,Fin):- 
+	getHeuristicValue(Coordonnee,Fin,H)
+	nb_setval(openList,[Coordonnee,0,H,-1]), 
+	nb_setval(closedList,[]).
 
 % Predicats A*
 /* 
   a_star(+CourantState, +FinalState, +Labyrinth, -Path) 
 */
 % openList vide donner la solution grace a closeList
-a_star(_,_,_,_):-
+a_star(_,_,_,Path):-
 	nb_getval(openList, []),
-	!.
+	!,
+	buildPath(Path).
 	
 % etat final atteint
 a_star([X,Y],[X,Y],_,Path):-
@@ -266,10 +270,11 @@ possibleMove([X,Y], Laby) :- elemAtCoord(Laby, [X,Y], E), E = 21.
 
 ////////////////////////////////////////
 
-Gérer destination pas encore explorée
+Gérer destination pas encore explorée fait ! (a vérifier car balec du -1 car si openList est vide on prend le premier de closedList 
+et on construit).
 
 BuildPath
 
-Init openList
+Init openList fait ! (a vérifier)
 
 Finir a_star (commentaires)
