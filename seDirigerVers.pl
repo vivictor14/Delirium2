@@ -1,7 +1,9 @@
-:- module( seDirigerVers, [
+/*:- module( seDirigerVers, [
 	init_astar/1,
 	seDirigerVers/5
-] ).
+] ).*/
+
+test(Path, Cout) :- init_astar(_), initialisationGlobale([0, 0], [2, 2]), a_star([0,0], [2,2], [[1,1,1],[1,1,1],[1,1,1]], Path, Cout).
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	initialisationGlobale(Coordonnee,Fin),
@@ -31,22 +33,22 @@ init_astar(_):-
 	
 initialisationGlobale(Coordonnee,Fin):- 
 	getHeuristicValue(Coordonnee,Fin,H),
-	nb_setval(openList,[Coordonnee,0,H,[-1,-1]]), 
+	nb_setval(openList,[[Coordonnee,0,H,[-1,-1]]]), 
 	nb_setval(closeList,[]).
 
 % Predicats A*
 /* 
-  a_star(+CourantState, +FinalState, +Labyrinth, -Path) 
+  a_star(+CourantState, +FinalState, +Labyrinth, -Path, -Cout) 
 */
 % openList vide pas de solution
 a_star(_,_,_,_,_):-
 	nb_getval(openList, []),
-	!.
+	!,
+	fail.
 	
 % etat final atteint par -1
 a_star([X,Y],_,Laby,Path,Cout):-
-	elemAtCoord(Laby, X, Y, E),
-	E = -1,
+	elemAtCoord(Laby, X, Y, -1),
 	buildPath([X,Y],Path,Cout).
 	
 % etat final atteint
@@ -107,6 +109,7 @@ movementD([X,Y],Laby,CoordD):-
 movementD(_,_,[]).
 	
 movementH([X,Y],Laby,CoordH):-
+	Y > 0,
 	YNew is Y-1,
 	possibleMove([X,YNew],Laby),
 	CoordH = [X,YNew].
@@ -121,6 +124,7 @@ movementB([X,Y],Laby,CoordB):-
 movementB(_,_,[]).
 	
 movementG([X,Y],Laby,CoordG):-
+	X > 0,
 	XNew is X-1,
 	possibleMove([XNew,Y],Laby),
 	CoordG = [XNew,Y].
@@ -413,8 +417,8 @@ test(_):-
 	
 % Element aux coordonnées données
 elemAtCoord([[E|_]|_], 0, 0, E).
-elemAtCoord([[_|R1]|R2], X, 0, E):- X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
-elemAtCoord([_|R2], X, Y, E):- Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
+elemAtCoord([[_|R1]|R2], X, 0, E):- X > 0, X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
+elemAtCoord([_|R2], X, Y, E):- Y > 0, Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
 
 % Prochaine position possible
 possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E =< 2.
