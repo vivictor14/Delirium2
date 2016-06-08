@@ -18,19 +18,17 @@ init(_) :- nb_setval(labyrinthe, [[-1]]), seDirigerVers:init_astar(_).
   move( +L,+LP, +X,+Y,+Pos, +Size, +CanGotoExit, +Energy,+GEnergy, +VPx,+VPy, -ActionId )
 */
 
-test(Action) :- init(_), move([5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 22, 6, 0, 0, 0, 0, 5, 5, 6, 6, 6, 6, 0, 6, 0, 6, 0, 6, 5, 5, 0, 0, 0, 6, 0, 6, 0, 0, 0, 0, 5, 5, 6, 1, 6, 6, 0, 0, 0, 6, 0, 6, 5, 5, 0, 0, 0, 6, 6, 0, 6, 6, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 6, 0, 0, 21, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], _, 5, 1, 17, 12, 5, _, _, _, _, Action).
-test2(Laby) :- updateLaby([[-1]], [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 22, 6, 0, 0, 0, 0, 5, 5, 6, 6, 6, 6, 0, 6, 0, 6, 0, 6, 5, 5, 0, 0, 0, 6, 0, 6, 0, 0, 0, 0, 5, 5, 6, 1, 6, 6, 0, 0, 0, 6, 0, 6, 5, 5, 0, 0, 0, 6, 6, 0, 6, 6, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 6, 0, 0, 21, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], 5, 1, 17, 12), nb_getval(labyrinthe, Laby).
 % Mettre à jour le labyrinthe avant de choisir le mouvement
 move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- nb_getval(labyrinthe, Laby), updateLaby(Laby, L, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action).
 
 % S'arrêter sur la sortie
-move(X, Y, 0, Laby, 0) :- elemAtCoord(X, Y, 21).
+move(X, Y, 1, Laby, 0) :- elemAtCoord(Laby, X, Y, 21), init(_).
 
 % Se diriger vers la sortie
-move(X, Y, 0, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers:seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
+move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers:seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
 
 % Se diriger vers un diamant
-move(X, Y, CGE, Laby, Action) :- not(CGE = 0), meilleureOption(X, Y, Laby, 2, Action).
+move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action).
 
 % Errer
 move(X, Y, _, Laby, Action) :- errer(X, Y, Laby, Action).
