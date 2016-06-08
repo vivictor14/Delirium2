@@ -1,9 +1,7 @@
-/*:- module( seDirigerVers, [
+:- module( seDirigerVers, [
 	init_astar/1,
 	seDirigerVers/5
-] ).*/
-
-test(Path, Cout) :- init_astar(_), initialisationGlobale([0, 0], [2, 2]), a_star([0,0], [2,2], [[1,1,1],[1,1,1],[1,1,1]], Path, Cout).
+] ).
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	initialisationGlobale(Coordonnee,Fin),
@@ -11,6 +9,11 @@ seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	Path = [Suite|_],
 	getAction(Coordonnee,Suite,Action).
 	
+	
+/*test(_):-
+	init(_),
+	initialisationGlobale([1,1],[3,1]),
+	*/
 
 getAction([X,_],[XSuite,_],Action):-
 	XSuite is X + 1,
@@ -38,7 +41,7 @@ initialisationGlobale(Coordonnee,Fin):-
 
 % Predicats A*
 /* 
-  a_star(+CourantState, +FinalState, +Labyrinth, -Path, -Cout) 
+  a_star(+CourantState, +FinalState, +Labyrinth, -Path) 
 */
 % openList vide pas de solution
 a_star(_,_,_,_,_):-
@@ -48,7 +51,8 @@ a_star(_,_,_,_,_):-
 	
 % etat final atteint par -1
 a_star([X,Y],_,Laby,Path,Cout):-
-	elemAtCoord(Laby, X, Y, -1),
+	elemAtCoord(Laby, X, Y, E),
+	E = -1,
 	buildPath([X,Y],Path,Cout).
 	
 % etat final atteint
@@ -56,16 +60,19 @@ a_star([X,Y],[X,Y],_,Path,Cout):-
 	buildPath([X,Y],Path,Cout).
 
 a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
+	nb_getval(openList,Liste),
 	extractBestNodeFromOpenList(Node),
 	addNodeToClose(Node),
 	Node = [[X,Y],G,_,_],
 	trouverSuccesseurs([X,Y],Laby,Successeurs),
 	ajouterChemin([X,Y],Successeurs,[XFinal,YFinal],G),
-	getBestNodeFromOpenList(Node),
-	Node = [NewState,_,_,_],
+	nb_getval(openList,List2),
+	getBestNodeFromOpenList(BestNode),
+	BestNode = [NewState,_,_,_],
 	a_star(NewState,[XFinal,YFinal],Laby,Path,Cout).
 	
-ajouterChemin(_,[],_,_,_).
+ajouterChemin(_,[],_,_):-
+	!.
 ajouterChemin([X,Y],[[]|Reste],Fin,G):-
 	!,
 	ajouterChemin([X,Y],Reste,Fin,G).
@@ -104,14 +111,15 @@ trouverSuccesseurs([X,Y],Laby,Successeurs):-
 movementD([X,Y],Laby,CoordD):-
 	XNew is X+1,
 	possibleMove([XNew,Y],Laby),
+	!,
 	CoordD = [XNew,Y].
 
 movementD(_,_,[]).
 	
 movementH([X,Y],Laby,CoordH):-
-	Y > 0,
 	YNew is Y-1,
 	possibleMove([X,YNew],Laby),
+	!,
 	CoordH = [X,YNew].
 
 movementH(_,_,[]).
@@ -119,14 +127,15 @@ movementH(_,_,[]).
 movementB([X,Y],Laby,CoordB):-
 	YNew is Y+1,
 	possibleMove([X,YNew],Laby),
+	!,
 	CoordB = [X,YNew].
 
 movementB(_,_,[]).
 	
 movementG([X,Y],Laby,CoordG):-
-	X > 0,
 	XNew is X-1,
 	possibleMove([XNew,Y],Laby),
+	!,
 	CoordG = [XNew,Y].
 
 movementG(_,_,[]).	
@@ -165,7 +174,8 @@ getBestNodeFromOpenList(BestNode):-
 	Node=[_,_,F,_],
 	getBestNodeFromOpenList(Node,BestNode,F,_,ResteOpen).
 	
-getBestNodeFromOpenList(BestNode,BestNode,BestF,BestF,[]).
+getBestNodeFromOpenList(BestNode,BestNode,BestF,BestF,[]):-
+	!.
 getBestNodeFromOpenList(_,BestNode,F,BestF,[Node|AutreNode]):-
 	Node = [_,_,FNode,_],
 	F > FNode,
@@ -417,8 +427,8 @@ test(_):-
 	
 % Element aux coordonnées données
 elemAtCoord([[E|_]|_], 0, 0, E).
-elemAtCoord([[_|R1]|R2], X, 0, E):- X > 0, X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
-elemAtCoord([_|R2], X, Y, E):- Y > 0, Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
+elemAtCoord([[_|R1]|R2], X, 0, E):- X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
+elemAtCoord([_|R2], X, Y, E):- Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
 
 % Prochaine position possible
 possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E =< 2.
