@@ -10,10 +10,7 @@ seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	getAction(Coordonnee,Suite,Action).
 	
 	
-/*test(_):-
-	init(_),
-	initialisationGlobale([1,1],[3,1]),
-	*/
+%test(Cout, Action) :- init_astar(_), initialisationGlobale([0, 0], [2, 2]), seDirigerVers([0,0], [2,2], [[1,1,1],[1,1,1],[1,1,1]], Cout, Action).
 
 getAction([X,_],[XSuite,_],Action):-
 	XSuite is X + 1,
@@ -425,8 +422,8 @@ test(_):-
 	
 % Element aux coordonnées données
 elemAtCoord([[E|_]|_], 0, 0, E).
-elemAtCoord([[_|R1]|R2], X, 0, E):- X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
-elemAtCoord([_|R2], X, Y, E):- Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
+elemAtCoord([[_|R1]|R2], X, 0, E):- X > 0, X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
+elemAtCoord([_|R2], X, Y, E):- Y > 0, Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
 
 % Prochaine position possible
 possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E =< 2.
