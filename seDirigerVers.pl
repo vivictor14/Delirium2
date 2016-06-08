@@ -5,10 +5,17 @@
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	initialisationGlobale(Coordonnee,Fin),
+	write('Fin:'),write(Fin),write('\n'),
 	a_star(Coordonnee,Fin,Laby,Path,Cout),
-	Path = [Suite|_],
-	getAction(Coordonnee,Suite,Action).
+	!,
+	write('Arrive ! : '),write(Path),write('\n'),
+	getSuite(Coordonnee,Path,Suite),
+	write('Suite : '),write(Suite),write('\n'),
+	getAction(Coordonnee,Suite,Action),write('Action :'),write(Action),write('\n').
 	
+	
+getSuite(Depart,[Suite,Depart,[-1,-1]],Suite):- !.
+getSuite(Depart,[_|Reste],Suite):- getSuite(Depart,Reste,Suite).
 	
 %test(Cout, Action) :- init_astar(_), initialisationGlobale([0, 0], [2, 2]), seDirigerVers([0,0], [2,2], [[1,1,1],[1,1,1],[1,1,1]], Cout, Action).
 
@@ -57,12 +64,20 @@ a_star([X,Y],[X,Y],_,Path,Cout):-
 	buildPath([X,Y],Path,Cout).
 
 a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
+	nb_getval(openList,ListeOpen),
+	write('Open :'),write(ListeOpen),write('\n'),
 	extractBestNodeFromOpenList(Node),
+	write('Extract :'),write(Node),write('\n'),
 	addNodeToClose(Node),
+	write('Add\n'),
 	Node = [[X,Y],G,_,_],
 	trouverSuccesseurs([X,Y],Laby,Successeurs),
+	write('Successeur :'),write(Successeurs),write('\n'),
 	ajouterChemin([X,Y],Successeurs,[XFinal,YFinal],G),
+	nb_getval(openList,ListeOpen2),
+	write('Ajout, OpenList Apres :'),write(ListeOpen2),write('\n'),
 	getBestNodeFromOpenList(BestNode),
+	write('GetBest\n'),
 	BestNode = [NewState,_,_,_],
 	a_star(NewState,[XFinal,YFinal],Laby,Path,Cout).
 	
@@ -144,6 +159,13 @@ getHeuristicValue([XATester,YATester],[XFinal,YFinal],V):- V is sqrt((XFinal-XAT
 /*
   extractBestNodeFromOpenList(-Node)
 */
+%si un seul elem
+extractBestNodeFromOpenList(BestNode):-
+	nb_getval(openList,OpenList),
+	OpenList = [BestNode|[]],
+	!,
+	substractFromOpenList(BestNode).
+
 extractBestNodeFromOpenList(BestNode):-
 	nb_getval(openList,OpenList),
 	OpenList = [Node|ResteOpen],
@@ -151,13 +173,15 @@ extractBestNodeFromOpenList(BestNode):-
 	extractBestNodeFromOpenList(Node,BestNode,F,_,ResteOpen),
 	substractFromOpenList(BestNode).
 	
-extractBestNodeFromOpenList(BestNode,BestNode,BestF,BestF,[]).
+extractBestNodeFromOpenList(BestNode,BestNode,BestF,BestF,[]):-
+	!.
 extractBestNodeFromOpenList(_,BestNode,F,BestF,[Node|AutreNode]):-
 	Node = [_,_,FNode,_],
 	F > FNode,
 	!,
 	extractBestNodeFromOpenList(Node,BestNode,FNode,BestF,AutreNode).
 extractBestNodeFromOpenList(CourNode,BestNode,F,BestF,[_|AutreNode]):-
+	!,
 	extractBestNodeFromOpenList(CourNode,BestNode,F,BestF,AutreNode).
 	
 /*
@@ -346,7 +370,8 @@ isInCloseWithBestCost(Successeur,GPere,[_|AutreNode]):-
 */
 buildPath([X,Y],Path,Cout):-
 	getCout([X,Y],Cout),
-	buildPath([X,Y],Path,[]).
+	buildPath([X,Y],PathSansPere,[]),
+	append([[X,Y]],PathSansPere,Path).
 
 buildPath([-1,-1],Path,Path).
 
