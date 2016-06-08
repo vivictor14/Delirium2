@@ -18,6 +18,8 @@ init(_) :- nb_setval(labyrinthe, [[-1]]), seDirigerVers:init_astar(_).
   move( +L,+LP, +X,+Y,+Pos, +Size, +CanGotoExit, +Energy,+GEnergy, +VPx,+VPy, -ActionId )
 */
 
+test(Action) :- init(_), move(0, 0, 5, [[1,1,1],[1,1,1],[1,1,1]], Action).
+
 % Mettre à jour le labyrinthe avant de choisir le mouvement
 move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- nb_getval(labyrinthe, Laby), updateLaby(Laby, L, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action).
 
@@ -61,8 +63,8 @@ elemAtPos([_|R], Pos, E) :- Pos1 is Pos - 1, elemAtPos(R, Pos1, E).
 
 % Element aux coordonnées données
 elemAtCoord([[E|_]|_], 0, 0, E).
-elemAtCoord([[_|R1]|R2], X, 0, E) :- X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
-elemAtCoord([_|R2], X, Y, E) :- Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
+elemAtCoord([[_|R1]|R2], X, 0, E) :- X > 0, X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
+elemAtCoord([_|R2], X, Y, E) :- Y > 0, Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
 
 % Position du dernier élément
 posLastElement(L, Pos) :- posLastElement(L, 0, Pos).
