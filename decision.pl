@@ -19,39 +19,42 @@ init(_) :- nb_setval(labyrinthe, [[-1]]), seDirigerVers:init_astar(_).
 */
 
 % Mettre à jour le labyrinthe avant de choisir le mouvement
-move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- nb_getval(labyrinthe, Laby), updateLaby(Laby, L, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action).
+move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- nb_getval(labyrinthe, Laby), updateLaby(Laby, L, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), write(Laby1), nl, move(X, Y, CGE, Laby1, Action).
 
 % S'arrêter sur la sortie
-move(X, Y, 1, Laby, 0) :- elemAtCoord(Laby, X, Y, 21), init(_).
+move(X, Y, 1, Laby, 0) :- elemAtCoord(Laby, X, Y, 21).
 
 % Se diriger vers la sortie
-move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers:seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
+move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action), write('Je me dirige vers la sortie'), nl.
 
 % Se diriger vers un diamant
-move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action).
+move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action), write('Je me dirige vers un diamant'), nl.
 
 % Errer
-move(X, Y, _, Laby, Action) :- errer(X, Y, Laby, Action).
+move(X, Y, _, Laby, Action) :- errer(X, Y, Laby, Action), write('J erre'), nl.
 
 % Mise à jour du labyrinthe
-updateLaby(OldLaby, L, X, Y, Pos, Size) :- coordLastElement(OldLaby, X1, Y1), posLastElement(L, Pos1), posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, Laby, 0, 0), nb_setval(labyrinthe, Laby).
+updateLaby(OldLaby, L, X, Y, Pos, Size) :- coordLastElement(OldLaby, X1, Y1), posLastElement(L, Pos1), updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, Laby, 0, 0), nb_setval(labyrinthe, Laby).
 
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E]], Xe, Ye) :- Xe >= X1, Ye >= Y1, Xe = X2, Ye = Y2, elemAtPos(L, Pos1, E).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E]], Xe, Ye) :- Xe = X1, Ye = Y1, Xe >= X2, Ye >= Y2, elemAtCoord(OldLaby, X2, Y2, E).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[-1]], Xe, Ye) :- Xe >= X1, Ye >= Y1, Xe >= X2, Ye >= Y2.
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E]|R2], Xe, Ye) :- Xe >= X1, Xe = X2, Ye =< Y2, posToCoord(X, Y, Pos, Size, 0, _, Y3), Ye >= Y3, Pos2 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos2, E), Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, R2, 0, Ye1).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E]|R2], Xe, Ye) :- Xe = X1, Ye =< Y1, Xe >= X2, elemAtCoord(OldLaby, Xe, Ye, E), Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, R2, 0, Ye1).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[-1]|R2], Xe, Ye) :- Xe >= X1, Xe >= X2, Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, R2, 0, Ye1).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, 0, X1, Y1), Xe >= X1, Ye >= Y1, Xe =< X2, Ye =< Y2, Pos2 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos2, E), Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [R1|R2], Xe1, Ye).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[E|R1]|R2], Xe, Ye) :- Xe =< X1, Ye =< Y1, elemAtCoord(OldLaby, Xe, Ye, E), Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [R1|R2], Xe1, Ye).
-updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [[-1|R1]|R2], Xe, Ye) :- Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, X2, Y2, Pos, Size, OldLaby, [R1|R2], Xe1, Ye).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, _, [[E]], Xe, Ye) :- Xe >= X1, Ye >= Y1, posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), Xe = X2, Ye = Y2, elemAtPos(L, Pos1, E).
+updateLaby(_, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[E]], Xe, Ye) :- Xe = X1, Ye = Y1, posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), Xe >= X2, Ye >= Y2, elemAtCoord(OldLaby, X1, Y1, E).
+updateLaby(_, X, Y, X1, Y1, Pos, Pos1, Size, _, [[-1]], Xe, Ye) :- Xe >= X1, Ye >= Y1, posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), Xe >= X2, Ye >= Y2.
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[E]|R2], Xe, Ye) :- Xe >= X1, posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), Xe = X2, Ye =< Y2, posToCoord(X, Y, Pos, Size, 0, _, Y3), Ye >= Y3, Pos2 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos2, E), Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, R2, 0, Ye1).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[E]|R2], Xe, Ye) :- Xe = X1, Ye =< Y1, posToCoord(X, Y, Pos, Size, Pos1, X2, _), Xe >= X2, elemAtCoord(OldLaby, Xe, Ye, E), Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, R2, 0, Ye1).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[-1]|R2], Xe, Ye) :- Xe >= X1, posToCoord(X, Y, Pos, Size, Pos1, X2, _), Xe >= X2, Ye1 is Ye + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, R2, 0, Ye1).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[E|R1]|R2], Xe, Ye) :- posToCoord(X, Y, Pos, Size, Pos1, X2, Y2), Xe =< X2, Ye =< Y2, posToCoord(X, Y, Pos, Size, 0, X3, Y3), Xe >= X3, Ye >= Y3, Pos2 is (Pos + (Xe - X) + Size * (Ye - Y)), elemAtPos(L, Pos2, E), Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [R1|R2], Xe1, Ye).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[E|R1]|R2], Xe, Ye) :- Xe =< X1, Ye =< Y1, elemAtCoord(OldLaby, Xe, Ye, E), Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [R1|R2], Xe1, Ye).
+updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [[-1|R1]|R2], Xe, Ye) :- Xe1 is Xe + 1, updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, [R1|R2], Xe1, Ye).
+
+test(Action) :- init(_), meilleureOption(1, 1, [[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], [5, 22, 0, 2, 0, 0, 6, 0, 0, 0, 0, 5], [5, 6, 6, 6, 6, 0, 6, 0, 6, 0, 6, 5], [5, 3, 0, 2, 6, 0, 6, 0, 0, 0, 0, 5], [5, 6, 1, 6, 6, 0, 0, 0, 6, 0, 6, 5], [5, 0, 0, 0, 6, 6, 0, 6, 6, 0, 0, 5], [5, 2, 0, 0, 0, 0, 0, 6, 0, 0, 21, 5], [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]], 2, Action).
+test2(Action) :- init(_), meilleureOption(0, 0, [[22, 0, 0], [2, 0, 0], [1, 1, 1]], 2, Action).
 
 % Meilleure option possible
 meilleureOption(X, Y, Laby, Elem, Action) :- meilleureOption(X, Y, Laby, Laby, 0, 0, Elem, 42, 0, Action).
 
 meilleureOption(X, Y, Laby, [[Elem]], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action), Cout =< Min.
 meilleureOption(_, _, _, [[_]], _, _, _, _, Action, Action) :- not(Action = 0).
-meilleureOption(X, Y, Laby, [[]|R2], X0, Y0, Elem, Min, Action0, Action) :- Y1 is Y0 + 1, meilleureOption(X, Y, Laby, R2, X0, Y1, Elem, Min, Action0, Action).
+meilleureOption(X, Y, Laby, [[]|R2], _, Y0, Elem, Min, Action0, Action) :- Y1 is Y0 + 1, meilleureOption(X, Y, Laby, R2, 0, Y1, Elem, Min, Action0, Action).
 meilleureOption(X, Y, Laby, [[Elem|R1]|R2], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action1), Cout =< Min, X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Cout, Action1, Action).
 meilleureOption(X, Y, Laby, [[_|R1]|R2], X0, Y0, Elem, Min, Action0, Action) :- X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Min, Action0, Action).
 

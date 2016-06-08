@@ -61,13 +61,11 @@ a_star([X,Y],[X,Y],_,Path,Cout):-
 	buildPath([X,Y],Path,Cout).
 
 a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
-	nb_getval(openList,ListeOpen),
 	extractBestNodeFromOpenList(Node),
 	addNodeToClose(Node),
 	Node = [[X,Y],G,_,_],
 	trouverSuccesseurs([X,Y],Laby,Successeurs),
 	ajouterChemin([X,Y],Successeurs,[XFinal,YFinal],G),
-	nb_getval(openList,ListeOpen2),
 	getBestNodeFromOpenList(BestNode),
 	BestNode = [NewState,_,_,_],
 	a_star(NewState,[XFinal,YFinal],Laby,Path,Cout).
