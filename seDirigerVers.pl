@@ -5,13 +5,10 @@
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	initialisationGlobale(Coordonnee,Fin),
-	write('Fin:'),write(Fin),write('\n'),
 	a_star(Coordonnee,Fin,Laby,Path,Cout),
 	!,
-	write('Arrive ! : '),write(Path),write('\n'),
 	getSuite(Coordonnee,Path,Suite),
-	write('Suite : '),write(Suite),write('\n'),
-	getAction(Coordonnee,Suite,Action),write('Action :'),write(Action),write('\n').
+	getAction(Coordonnee,Suite,Action).
 	
 	
 getSuite(Depart,[Suite,Depart,[-1,-1]],Suite):- !.
@@ -65,19 +62,13 @@ a_star([X,Y],[X,Y],_,Path,Cout):-
 
 a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
 	nb_getval(openList,ListeOpen),
-	write('Open :'),write(ListeOpen),write('\n'),
 	extractBestNodeFromOpenList(Node),
-	write('Extract :'),write(Node),write('\n'),
 	addNodeToClose(Node),
-	write('Add\n'),
 	Node = [[X,Y],G,_,_],
 	trouverSuccesseurs([X,Y],Laby,Successeurs),
-	write('Successeur :'),write(Successeurs),write('\n'),
 	ajouterChemin([X,Y],Successeurs,[XFinal,YFinal],G),
 	nb_getval(openList,ListeOpen2),
-	write('Ajout, OpenList Apres :'),write(ListeOpen2),write('\n'),
 	getBestNodeFromOpenList(BestNode),
-	write('GetBest\n'),
 	BestNode = [NewState,_,_,_],
 	a_star(NewState,[XFinal,YFinal],Laby,Path,Cout).
 	
