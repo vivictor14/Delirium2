@@ -25,7 +25,8 @@ eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R
 
   
 eviterMonstres(Map,Size,NewMap):-
-  recupPosMonstre(Map,1,PosMonstres),
+  recupPosMonstre(Map,1,PosMonstresSansBouger),
+  modificationPosMonstre(PosMonstresSansBouger,Size,D,PosMonstres),
   lancerRecupDirection(PosMonstres,Size,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
@@ -34,7 +35,25 @@ lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListePosMonstre),
   verifMonstre(PosMonstres,Size,ListeDirectionPrecedent,ListePosMonstre).
   
-  
+modificationPosMonstre([],_,_,[]):-
+modificationPosMonstre([X|R],_,1,PosMonstres):-
+	X1 is X-1,
+	append([X1],PosMonstresAvant,PosMonstres),
+	modificationPosMonstre(R,1,PosMonstresAvant).
+modificationPosMonstre([X|R],_,3,PosMonstres):-
+	X1 is X+1,
+	append([X1],PosMonstresAvant,PosMonstres),
+	modificationPosMonstre(R,1,PosMonstresAvant).
+modificationPosMonstre([X|R],Size,2,PosMonstres):-
+	X1 is X+Size,
+	append([X1],PosMonstresAvant,PosMonstres),
+	modificationPosMonstre(R,1,PosMonstresAvant).
+modificationPosMonstre([X|R],Size,4,PosMonstres):-
+	X1 is X-Size,
+	append([X1],PosMonstresAvant,PosMonstres),
+	modificationPosMonstre(R,1,PosMonstresAvant).
+
+
 nouvellePosition(_,_,[],[]).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	Val = [5,Pos],
