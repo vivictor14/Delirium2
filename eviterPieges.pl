@@ -38,13 +38,32 @@ lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
   
 nouvellePosition(_,_,[],[]).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
+	Val = [5,Pos],
+	Pos1 is Pos+1,
+	ajouteCroix(Pos1,Pos,Size,Pos2),
+	Pos3 is Pos+Size,
+	Pos4 is Pos-1,
+	ajouteCroix(Pos4,Pos,Size,Pos5),
+	Pos6 is Pos-Size,
+	append([[Pos,Pos2],[Pos,Pos3],[Pos,Pos5],[Pos,Pos6]],NewListe,Liste),
+	!,
+	nouvellePosition(Map,Size,Reste,NewListe).
+nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	Val = [D,Pos],
 	moveMonster(Map, Pos, Size, D, Pos1),
 	append([[Pos,Pos1]],NewListe,Liste),
 	!,
 	nouvellePosition(Map,Size,Reste,NewListe).
+
 nouvellePosition(Map,Size,[_|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,Liste).
+
+ajouteCroix(Pos,_,Size,Pos1):-
+	Pos > -1,
+	Mod is mod(Pos,Size),
+	Mod \=0,
+	Pos1 = Pos.
+ajouteCroix(Pos,PosInitiale,Size,PosInitiale).
 
 /*
   recupPosMonstre(+Map,+Pos,-PosMonstres),
