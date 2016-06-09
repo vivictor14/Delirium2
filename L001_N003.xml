@@ -1,0 +1,24 @@
+<Map Name="MapB IA412016" Width="10" Height="6">
+
+ <Data>
+  "       .,       .,       .,       .,       .,       .,       .,       .,       .,   Diam"
+  "    	  .,       .,       .,    Diam,       .,       .,       .,       .,       .,      ."
+  "    Diam,       .,       .,       .,       .,       .,       .,       .,       .,      ."
+  "       .,       .,       .,       .,       .,       .,       .,       .,       .,      ."
+  "       .,       .,    Diam,       .,       .,       .,       .,       .,    Diam,      ."
+  "       .,       .,       .,       .,       .,    Diam,       .,       .,       .,   Exit"
+ </Data>
+
+ <Parameters GameDifficulty="Easy">
+  <Gravity Direction="Down" />
+
+  <Gateways>
+    "1,1"
+  </Gateways>
+
+  <Goals Time="20">
+   <Goal Gather="6" Item="Diam" Points="2" />
+  </Goals>
+ </Parameters>
+
+</Map>

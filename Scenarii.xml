@@ -1,0 +1,8 @@
+<Scenarii NbrLevels="1" NbrMapsPerLevel="3" ReadOnly="1">
+
+  <Scenario Name="L001_N001.xml" />
+  <Scenario Name="L001_N002.xml" />
+  <Scenario Name="L001_N003.xml" />
+  <Scenario Name="L001_N004.xml" />
+
+</Scenarii>

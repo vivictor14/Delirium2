@@ -1,0 +1,24 @@
+<Map Name="MapA IA412016" Width="10" Height="6">
+
+ <Data>
+  "       ,  Stone,      .,       ,       ,       ,       ,       ,       ,       "
+  "    	  ,    StW,    StW,    StW,    StW,    StW,    StW,    StW,       ,       "
+  "       ,  Stone,       ,       ,       ,       ,       ,    StW,       ,       "
+  "       ,    StW,       ,       ,       ,    StW,       ,    StW,       ,       "
+  "       ,    StW,       ,       ,       ,    StW,       ,    StW,    StW,       "
+  "       ,    StW,       ,       ,       ,    StW,       ,       ,       ,   Exit"
+ </Data>
+
+ <Parameters GameDifficulty="Easy">
+  <Gravity Direction="Down" />
+
+  <Gateways>
+    "1,1"
+  </Gateways>
+
+  <Goals Time="20">
+   <Goal Gather="0" Item="Diam" Points="2" />
+  </Goals>
+ </Parameters>
+
+</Map>
