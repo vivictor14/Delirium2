@@ -3,8 +3,8 @@ init_GlobaleMonster(_):-
   
 avoirNewCarte(Map,Size,PosMonstres,NewMap):-
   lancerRecupDirection(PosMonstres,Size,ListeD),
-  nouvellePosition(Map,Size,ListeD,Liste),
-  modifCarte(Map,ListeD,NewMap).
+  nouvellePosition(Map,Size,ListeD,ListeP),
+  modifCarte(Map,ListeP,NewMap).
   
 lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListePosMonstre),
@@ -14,7 +14,7 @@ lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
 nouvellePosition(_,_,[],[]):-
 nouvellePosition(Map,Size,[D,Pos|Reste],Liste):-
 	moveMonster(Map, Pos, Size, D, Pos1),
-	append(Pos1,NewListe,Liste),
+	append([Pos,Pos1],NewListe,Liste),
 	!,
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[_|Reste],Liste):-
@@ -32,10 +32,19 @@ verifMonstre([Monstre|AutresMonstre],Size,ListeD,ListPosMonstre):-
 verifMonstre([_|AutresMonstre],Size,ListeD,ListPosMonstre):-
   verifMonstre(AutresMonstre,ListeD,ListPosMonstre).
 
+replace([_|T], 0, X, [X|T]).
+replace([H|T], I, X, [H|R]):- 
+	I > -1, NI is I-1, replace(T, NI, X, R), !.
+  
 /*
   modifCarte(+Map,+ListeD,-NewMap)
 */
-  modifCarte(_,[],_).
+modifCarte(N,[],N).
+modifCarte(Map,[XAvant,XApres|Reste],NewMap)
+	replace(Map,XAvant,0,MapRecursive2),
+	replace(MapRecursive,XApres,24,MapSuivante),
+	!,
+	modifCarte(MapSuivante,Reste,NewMap).
 
 
 /*
