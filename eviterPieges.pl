@@ -157,7 +157,7 @@ moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is 
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1) :- D = 3, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + 1, Pos1 < Size, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 
