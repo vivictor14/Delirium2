@@ -69,7 +69,6 @@ think( Stimulus, [Action] ) :-
 	canGotoExit(NbrDiamonds,CGE),
 	splitList( Data,Percepts1,Data2,NbrPercepts ),
 	splitList( Data2,Percepts2,[],NbrPercepts ),
-	write('Liste 2: '), write(Percepts2), nl,
 	move( Percepts1,Percepts2,X,Y,Pos,Size,CGE,Energy,GEnergy,VPx,VPy,Action ).
 
 

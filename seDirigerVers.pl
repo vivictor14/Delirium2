@@ -6,6 +6,7 @@
 :- use_module(fonctions).
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
+	write(Fin), nl, 
 	initialisationGlobale(Coordonnee,Fin),
 	a_star(Coordonnee,Fin,Laby,Path,Cout),
 	!,
@@ -72,9 +73,9 @@ a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
 	
 ajouterChemin(_,[],_,_,_):-
 	!.
-ajouterChemin([X,Y],[[]|Reste],Fin,G,_):-
+ajouterChemin([X,Y],[[]|Reste],Fin,G,Laby):-
 	!,
-	ajouterChemin([X,Y],Reste,Fin,G,_).
+	ajouterChemin([X,Y],Reste,Fin,G,Laby).
 	
 % test si il n'est pas dans closed et open
 ajouterChemin([X,Y],[Successeur|Reste],Fin,G,Laby):-
@@ -82,9 +83,9 @@ ajouterChemin([X,Y],[Successeur|Reste],Fin,G,Laby):-
 	not(isInClose(Successeur)),
 	!,
 	getHeuristicValue(Successeur,Fin,H),
-	%getCValue(C,Successeur,Laby),
-	%GPlus is (G + C),
-	GPlus is (G+1),
+	getCValue(C, Successeur, Laby),
+	GPlus is (G + C),
+	%GPlus is (G+1),
 	F is (GPlus + H),
 	NewNode = [Successeur,GPlus,F,[X,Y]],
 	addNodeToOpen(NewNode),
@@ -100,7 +101,7 @@ ajouterChemin([X,Y],[Successeur|Reste],Fin,G,_):-
 ajouterChemin([X,Y],[_|Reste],Fin,G,_):-
 	ajouterChemin([X,Y],Reste,Fin,G,_).
 	
-/*% 10 de cout pour un rocher
+% 10 de cout pour un rocher
 getCValue(C,[X,Y],Laby):-
 	elemAtCoord(Laby,X,Y,3),
 	!,
@@ -113,7 +114,7 @@ getCValue(C,[X,Y],Laby):-
 % 1 pour le reste
 getCValue(C,_,_):-
 	!,
-	C is 1.*/
+	C is 1.
 	
 % trouver les successeur 
 trouverSuccesseurs([X,Y],Laby,Successeurs):-
@@ -125,7 +126,7 @@ trouverSuccesseurs([X,Y],Laby,Successeurs):-
 
 movementD([X,Y],Laby,CoordD):-
 	XNew is X+1,
-	possibleMove([XNew,Y],Laby),
+	possibleMove([XNew,Y],Laby,d),
 	!,
 	CoordD = [XNew,Y].
 
@@ -133,7 +134,7 @@ movementD(_,_,[]).
 	
 movementH([X,Y],Laby,CoordH):-
 	YNew is Y-1,
-	possibleMove([X,YNew],Laby),
+	possibleMove([X,YNew],Laby,h),
 	!,
 	CoordH = [X,YNew].
 
@@ -141,7 +142,7 @@ movementH(_,_,[]).
 	
 movementB([X,Y],Laby,CoordB):-
 	YNew is Y+1,
-	possibleMove([X,YNew],Laby),
+	possibleMove([X,YNew],Laby,b),
 	!,
 	CoordB = [X,YNew].
 
@@ -149,7 +150,7 @@ movementB(_,_,[]).
 	
 movementG([X,Y],Laby,CoordG):-
 	XNew is X-1,
-	possibleMove([XNew,Y],Laby),
+	possibleMove([XNew,Y],Laby,g),
 	!,
 	CoordG = [XNew,Y].
 
@@ -442,5 +443,10 @@ isInClose(Successeur,[_|AutreNode]):-
 	isInClose(Successeur,AutreNode).
 
 % Prochaine position possible
-possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E =< 3.
-possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E = 21.
+possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E =< 2.
+possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E = 21.
+
+possibleMove([X,Y],Laby,g):- elemAtCoord(Laby,X,Y,3), XGauche is (X+1), elemAtCoord(Laby,XGauche,Y,0).
+possibleMove([X,Y],Laby,h):- elemAtCoord(Laby,X,Y,3), YHaut is (Y-1), elemAtCoord(Laby,X,YHaut,0).
+possibleMove([X,Y],Laby,b):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,0).
+possibleMove([X,Y],Laby,d):- elemAtCoord(Laby,X,Y,3), XDroit is (X-1), elemAtCoord(Laby,XDroit,Y,0).

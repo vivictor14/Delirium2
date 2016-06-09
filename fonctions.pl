@@ -8,6 +8,8 @@
 	premiereOccurence/4
 ] ).
 
+:- use_module(seDirigerVers).
+
 % Meilleure option possible
 meilleureOption(X, Y, Laby, Elem, Action) :- meilleureOption(X, Y, Laby, Laby, 0, 0, Elem, 200, 0, Action).
 

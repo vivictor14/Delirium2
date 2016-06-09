@@ -30,7 +30,8 @@ move(X, Y, 1, Laby, 0) :- elemAtCoord(Laby, X, Y, 21).
 move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action), write('Je me dirige vers la sortie'), nl.
 
 % Se diriger vers un diamant
-move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action), write('Je me dirige vers un diamant'), nl.
+%move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action), write('Je me dirige vers un diamant'), nl.
+move(X, Y, 0, Laby, Action) :- premiereOccurence(Laby, 2, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
 
 % Errer
 move(X, Y, _, Laby, Action) :- errer(X, Y, Laby, Action), write('J erre'), nl.

@@ -1,5 +1,6 @@
 :- module( eviterPieges, [
-	eviterPieges/3
+	eviterPieges/3,
+	init_GlobaleMonster/1
 ] ).
 
 :- use_module(fonctions).
@@ -25,8 +26,9 @@ eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R
 eviterMonstres(Map,Size,NewMap):-
   recupPosMonstre(Map,1,PosMonstres),
   lancerRecupDirection(PosMonstres,Size,ListeD),
+  write(ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
-  write(ListeP),
+  write(Map),
   modifCarte(Map,ListeP,NewMap).
   
 lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
@@ -77,7 +79,7 @@ replace([H|T], I, X, [H|R]):-
 /*
   modifCarte(+Map,+ListeD,-NewMap)
 */
-modifCarte(N,[],N).
+modifCarte(N,[],N):-!.
 modifCarte(Map,[X|Reste],NewMap):-
 	X = [XAvant,XApres],
 	replace(Map,XAvant,0,MapRecursive),
@@ -147,7 +149,7 @@ elemAtPos([_|R], Pos, Element) :- Pos1 is Pos - 1, elemAtPos(R, Pos1, Element).
 */
 
 % Prochaine position possible pour monstre
-possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, X), X = 0.
+possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 
 % f(d)
 % Vers la gauche
