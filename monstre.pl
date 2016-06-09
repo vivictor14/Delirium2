@@ -1,9 +1,11 @@
 init_GlobaleMonster(_):-
   nb_setval(posMonstre,[]).
   
-avoirNewCarte(Map,Size,PosMonstres,NewMap):-
+avoirNewCarte(Map,Size,NewMap):-
+  recupPosMonstre(Map,1,PosMonstres),
   lancerRecupDirection(PosMonstres,Size,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
+  write(ListeP),
   modifCarte(Map,ListeP,NewMap).
   
 lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
@@ -20,7 +22,20 @@ nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[_|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,Liste).
-  
+
+/*
+  recupPosMonstre(+Map,+Pos,-PosMonstres),
+*/
+recupPosMonstre([],_,[]).
+recupPosMonstre([X|R],Nb,[Nb|R2]):-
+	X > 23,
+	Nb1 is Nb+1,
+	!,
+	recupPosMonstre(R,Nb1,R2).
+recupPosMonstre([_|R],Nb,PosMonstres):-
+	Nb1 is Nb+1,
+	recupPosMonstre(R,Nb1,PosMonstres).
+	
   
 verifMonstre([],_,[],PosMonstre):-
   flushPosMonstre(PosMonstre,NewPosMonstre),
@@ -34,7 +49,7 @@ verifMonstre([Monstre|AutresMonstre],Size,ListeD,ListPosMonstre):-
 verifMonstre([_|AutresMonstre],Size,ListeD,ListPosMonstre):-
   verifMonstre(AutresMonstre,Size,ListeD,ListPosMonstre).
 
-replace([_|T], 0, X, [X|T]).
+replace([_|T], 1, X, [X|T]).
 replace([H|T], I, X, [H|R]):- 
 	I > -1, NI is I-1, replace(T, NI, X, R), !.
   
@@ -58,7 +73,7 @@ modifCarte(Map,[_|Reste],NewMap):-
 
 flushPosMonstre([],[]).
 flushPosMonstre([Monstre|AutresMonstre],PosMonstre):-
-    Monstre = [Pos1,Pos2],
+    Monstre = [_,Pos2],
     append([Pos2],NewPosMonstre,PosMonstre),
     !,
     flushPosMonstre(AutresMonstre,NewPosMonstre).
@@ -71,30 +86,30 @@ flushPosMonstre([Monstre|AutresMonstre],PosMonstre):-
 
 % droite = 1 , haut = 2, gauche = 3, bas = 4
 addPosition([],[],_,[],[]).
-addPosition([],X,Size,NewPos,[]):-
+addPosition([],X,_,NewPos,[]):-
   append([[X,X]],[],NewPos).
-addPosition([PosAvant|Reste],X,Size,NewPos,D):-
+addPosition([PosAvant|_],X,_,NewPos,D):-
   X1 is X+1,
   PosAvant = X1,
   D = [3,X],
   !,
   append([[PosAvant,X]],[],NewPos).
   
-addPosition([PosAvant|Reste],X,Size,NewPos,D):-
+addPosition([PosAvant|_],X,_,NewPos,D):-
   X1 is X-1,
   PosAvant = X1,
   D = [1,X],
   !,
   append([[PosAvant,X]],[],NewPos).
   
-addPosition([PosAvant|Reste],X,Size,NewPos,D):-
+addPosition([PosAvant|_],X,Size,NewPos,D):-
   X1 is X+Size,
   PosAvant = X1,
   D = [4,X],
   !,
   append([[PosAvant,X]],[],NewPos).
 
-addPosition([PosAvant|Reste],X,Size,NewPos,D):-
+addPosition([PosAvant|_],X,Size,NewPos,D):-
   X1 is X-Size,
   PosAvant = X1,
   D = [2,X],
