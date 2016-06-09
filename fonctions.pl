@@ -1,5 +1,5 @@
 :- module( fonctions, [
-	meilleureOption/5,
+	meilleureOption/4,
 	posToCoord/7,
 	elemAtPos/3,
 	elemAtCoord/4,
@@ -11,13 +11,14 @@
 :- use_module(seDirigerVers).
 
 % Meilleure option possible
-meilleureOption(X, Y, Laby, Elem, Action) :- meilleureOption(X, Y, Laby, Laby, 0, 0, Elem, 200, 0, Action).
+meilleureOption([X, Y], Laby, Elem, [X1, Y1]) :- meilleureOption([X, Y], Laby, Laby, [0, 0], Elem, 200, [0, 0], [X1, Y1]).
 
-meilleureOption(X, Y, Laby, [[Elem]], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action), Cout =< Min.
-meilleureOption(_, _, _, [[_]], _, _, _, _, Action, Action) :- not(Action = 0).
-meilleureOption(X, Y, Laby, [[]|R2], _, Y0, Elem, Min, Action0, Action) :- Y1 is Y0 + 1, meilleureOption(X, Y, Laby, R2, 0, Y1, Elem, Min, Action0, Action).
-meilleureOption(X, Y, Laby, [[Elem|R1]|R2], X0, Y0, Elem, Min, _, Action) :- seDirigerVers([X, Y], [X0, Y0], Laby, Cout, Action1), Cout =< Min, X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Cout, Action1, Action).
-meilleureOption(X, Y, Laby, [[_|R1]|R2], X0, Y0, Elem, Min, Action0, Action) :- X1 is X0 + 1, meilleureOption(X, Y, Laby, [R1|R2], X1, Y0, Elem, Min, Action0, Action).
+meilleureOption(Coord, _, [[Elem]], Coord1, Elem, Min, _, Coord1) :- getHeuristicValue(Coord, Coord1, Cout), Cout =< Min.
+meilleureOption(_, _, [[_]], _, _, _, [0, 0], _) :- fail.
+meilleureOption(_, _, [[_]], _, _, _, Coord1, Coord1).
+meilleureOption([X, Y], Laby, [[]|R2], [_, Y0], Elem, Min, [X1, Y1], [X2, Y2]) :- Y3 is Y0 + 1, meilleureOption([X, Y], Laby, R2, [0, Y3], Elem, Min, [X1, Y1], [X2, Y2]).
+meilleureOption([X, Y], Laby, [[Elem|R1]|R2], [X0, Y0], Elem, Min, _, [X2, Y2]) :- getHeuristicValue([X, Y], [X0, Y0], Cout), Cout =< Min, X3 is X0 + 1, meilleureOption([X, Y], Laby, [R1|R2], [X3, Y0], Elem, Cout, [X0, Y0], [X2, Y2]).
+meilleureOption([X, Y], Laby, [[_|R1]|R2], [X0, Y0], Elem, Min, [X1, Y1], [X2, Y2]) :- X3 is X0 + 1, meilleureOption([X, Y], Laby, [R1|R2], [X3, Y0], Elem, Min, [X1, Y1], [X2, Y2]).
 
 % Transformer position dans la liste en coordonnées dans le labyrinthe
 posToCoord(X, Y, Pos, Size, Pos1, X1, Y1) :- X1 is (X + (Pos1 mod Size) - (Pos mod Size)), Y1 is (Y + (Pos1 // Size) - (Pos // Size)).

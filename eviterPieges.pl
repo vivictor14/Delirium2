@@ -5,8 +5,7 @@
 
 :- use_module(fonctions).
 
-init_GlobaleMonster(_):-
-  nb_setval(posMonstre,[]).
+init_GlobaleMonster(_):- nb_setval(posMonstre,[]).
   
 % Ajoute les zones dangereuses à la liste
 eviterPieges(L, Size, L2) :- eviterPieges(L, L, 0, Size, L1), eviterMonstres(L1, Size, L2).
@@ -20,15 +19,15 @@ eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - 1, elemAtPos(L, Pos1
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 2), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 3), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 5), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
+eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + Size, elemAtPos(L, Pos2, 0), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2).
+eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + Size, elemAtPos(L, Pos2, 22), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2).
 eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R1, Pos1, Size, R2).
 
   
 eviterMonstres(Map,Size,NewMap):-
   recupPosMonstre(Map,1,PosMonstres),
   lancerRecupDirection(PosMonstres,Size,ListeD),
-  write(ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
-  write(Map),
   modifCarte(Map,ListeP,NewMap).
   
 lancerRecupDirection(PosMonstres,Size,ListeDirectionPrecedent):-
@@ -63,7 +62,7 @@ ajouteCroix(Pos,_,Size,Pos1):-
 	Mod is mod(Pos,Size),
 	Mod \=0,
 	Pos1 = Pos.
-ajouteCroix(Pos,PosInitiale,Size,PosInitiale).
+ajouteCroix(_,PosInitiale,_,PosInitiale).
 
 /*
   recupPosMonstre(+Map,+Pos,-PosMonstres),
@@ -174,7 +173,7 @@ possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 % Vers la gauche
 moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
-moveMonster(L, Pos, Size, D, Pos1) :- D = 3, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, _, _, D, Pos1) :- D = 3, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
 moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
@@ -184,28 +183,28 @@ moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - Size, possibleMoveMon
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, _, D, Pos1) :- D = 3, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, _, D, Pos1) :- D = 1, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 
 % f(f(d))
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, _, D, Pos1) :- D = 3, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, _, D, Pos1) :- D = 1, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 
 % f(f(f(d)))
 % Vers la droite
-moveMonster(L, Pos, _, D, Pos1) :- D = 2, Pos1 is Pos + 1,  Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + 1,  Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, _, D, Pos1) :- D = 4, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.

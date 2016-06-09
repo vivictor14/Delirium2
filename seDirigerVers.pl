@@ -1,12 +1,12 @@
 :- module( seDirigerVers, [
 	init_astar/1,
-	seDirigerVers/5
+	seDirigerVers/5,
+	getHeuristicValue/3
 ] ).
 
 :- use_module(fonctions).
 
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
-	write(Fin), nl, 
 	initialisationGlobale(Coordonnee,Fin),
 	a_star(Coordonnee,Fin,Laby,Path,Cout),
 	!,
@@ -446,7 +446,7 @@ isInClose(Successeur,[_|AutreNode]):-
 possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E =< 2.
 possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E = 21.
 
-possibleMove([X,Y],Laby,g):- elemAtCoord(Laby,X,Y,3), XGauche is (X+1), elemAtCoord(Laby,XGauche,Y,0).
+possibleMove([X,Y],Laby,g):- elemAtCoord(Laby,X,Y,3), XGauche is (X-1), elemAtCoord(Laby,XGauche,Y,0).
 possibleMove([X,Y],Laby,h):- elemAtCoord(Laby,X,Y,3), YHaut is (Y-1), elemAtCoord(Laby,X,YHaut,0).
 possibleMove([X,Y],Laby,b):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,0).
-possibleMove([X,Y],Laby,d):- elemAtCoord(Laby,X,Y,3), XDroit is (X-1), elemAtCoord(Laby,XDroit,Y,0).
+possibleMove([X,Y],Laby,d):- elemAtCoord(Laby,X,Y,3), XDroit is (X+1), elemAtCoord(Laby,XDroit,Y,0).

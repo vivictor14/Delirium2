@@ -13,7 +13,7 @@
 :- use_module(fonctions).
 
 % Initialise les tableaux de l'algorythme A*
-init(_) :- nb_setval(labyrinthe, [[-1]]), init_astar(_), init_GlobaleMonster(_).
+init(_) :- nb_setval(labyrinthe, [[-1]]), nb_setval(sortie, []), init_astar(_), init_GlobaleMonster(_).
 
 
 /*
@@ -21,20 +21,19 @@ init(_) :- nb_setval(labyrinthe, [[-1]]), init_astar(_), init_GlobaleMonster(_).
 */
 
 % Mettre à jour le labyrinthe avant de choisir le mouvement
-move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- eviterPieges(L, Size, L1), nb_getval(labyrinthe, Laby), updateLaby(Laby, L1, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action).
+move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- eviterPieges(L, Size, L1), nb_getval(labyrinthe, Laby), write(L1), updateLaby(Laby, L1, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action).
 
 % S'arrêter sur la sortie
-move(X, Y, 1, Laby, 0) :- elemAtCoord(Laby, X, Y, 21).
+move(X, Y, 1, _, Action) :- nb_getval(sortie, Coord), [X, Y] = Coord, Action is 0, write('J attend'), nl.
 
 % Se diriger vers la sortie
-move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action), write('Je me dirige vers la sortie'), nl.
+move(X, Y, 1, Laby, Action) :- premiereOccurence(Laby, 21, X1, Y1), nb_setval(sortie, [X1, Y1]), write('Je me dirige vers la sortie'), nl, seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
 
 % Se diriger vers un diamant
-%move(X, Y, 0, Laby, Action) :- meilleureOption(X, Y, Laby, 2, Action), write('Je me dirige vers un diamant'), nl.
-move(X, Y, 0, Laby, Action) :- premiereOccurence(Laby, 2, X1, Y1), seDirigerVers([X, Y], [X1, Y1], Laby, _, Action).
+move(X, Y, 0, Laby, Action) :- meilleureOption([X, Y], Laby, 2, Coord), write('Je me dirige vers un diamant'), nl, seDirigerVers([X, Y], Coord, Laby, _, Action).
 
 % Errer
-move(X, Y, _, Laby, Action) :- errer(X, Y, Laby, Action), write('J erre'), nl.
+move(X, Y, _, Laby, Action) :- write('J erre'), nl, errer(X, Y, Laby, Action).
 
 % Mise à jour du labyrinthe
 updateLaby(OldLaby, L, X, Y, Pos, Size) :- coordLastElement(OldLaby, X1, Y1), posLastElement(L, Pos1), updateLaby(L, X, Y, X1, Y1, Pos, Pos1, Size, OldLaby, Laby, 0, 0), nb_setval(labyrinthe, Laby).
