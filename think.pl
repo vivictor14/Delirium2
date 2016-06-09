@@ -66,13 +66,10 @@ think( Stimulus, [Action] ) :-
 	HeaderSize is integer( F_HeaderSize ),
 	splitList( External_Percepts,Header,Data,HeaderSize ),
 	Header=[_,X,Y,VPx,VPy,NbrPercepts,Pos,Size,_,NbrDiamonds,Energy,_,GEnergy | _],
-	write('Position: '), write(X), write(' '), write(Y),
-	write(' - ViewPerimeter: '), write(VPx), write(' '), write(VPy), nl,
 	canGotoExit(NbrDiamonds,CGE),
 	splitList( Data,Percepts1,Data2,NbrPercepts ),
 	splitList( Data2,Percepts2,[],NbrPercepts ),
-	write('CGE: '), write(CGE), nl, 
-	write('L: '), write(Percepts1), nl, 
+	write('Liste 2: '), write(Percepts2), nl,
 	move( Percepts1,Percepts2,X,Y,Pos,Size,CGE,Energy,GEnergy,VPx,VPy,Action ).
 
 

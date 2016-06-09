@@ -3,6 +3,8 @@
 	seDirigerVers/5
 ] ).
 
+:- use_module(fonctions).
+
 seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
 	initialisationGlobale(Coordonnee,Fin),
 	a_star(Coordonnee,Fin,Laby,Path,Cout),
@@ -438,11 +440,6 @@ isInClose(Successeur,[Node|_]):-
 	
 isInClose(Successeur,[_|AutreNode]):-
 	isInClose(Successeur,AutreNode).
-	
-% Element aux coordonnées données
-elemAtCoord([[E|_]|_], 0, 0, E).
-elemAtCoord([[_|R1]|R2], X, 0, E):- X > 0, X1 is X - 1, elemAtCoord([R1|R2], X1, 0, E). 
-elemAtCoord([_|R2], X, Y, E):- Y > 0, Y1 is Y - 1, elemAtCoord(R2, X, Y1, E).
 
 % Prochaine position possible
 possibleMove([X,Y], Laby):- elemAtCoord(Laby,X,Y, E), E =< 3.
