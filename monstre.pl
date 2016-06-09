@@ -3,7 +3,6 @@ init_GlobaleMonster(_):-
   
 avoirNewCarte(Map,Size,PosMonstres,NewMap):-
   lancerRecupDirection(PosMonstres,Size,ListeD),
-  write(ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
   
