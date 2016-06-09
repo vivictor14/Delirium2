@@ -24,16 +24,18 @@ eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + Size, elemAtPos(L, P
 eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + Size, elemAtPos(L, Pos2, 22), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2).
 eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R1, Pos1, Size, R2).
   
+  
+%rajouter elem pour coordonneeMonstre !!!!
 eviterMonstres(Map,NewMap):-
   recupPosMonstre(Map,1,PosMonstres),
   coordonneeMonstre(PosMonstres,CoordMonstres)
-  lancerRecupDirection(CoordMonstres,ListeD),
+  lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
   
-lancerRecupDirection(CoordMonstres,Size,ListeDirectionPrecedent):-
+lancerRecupDirection(CoordMonstres,PosMonstres,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListeCoordMonstre),
-  verifMonstre(CoordMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
+  verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
 
 coordonneeMonstre([],[]).
 coordonneeMonstre([Pos|Reste],ListeCord):-
@@ -44,13 +46,14 @@ coordonneeMonstre([Pos|Reste],ListeCord):-
 
 nouvellePosition(_,_,[],[]).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
-	Val = [5,Coord],
-	Coord = [X,Y],
-	X1 is X+1,
-	X2 is X-1,
-	Y1 is Y+1,
-	Y2 is Y-1,
-	append([[Pos,[X1,Y]],[Pos,[X2,Y]],[Pos,[X,Y1]],[Pos,[X,Y2]]],NewListe,Liste),
+	Val = [5,Pos],
+	Pos1 is Pos+1,
+	ajouteCroix(Pos1,Pos,Size,Pos2),
+	Pos3 is Pos+Size,
+	Pos4 is Pos-1,
+	ajouteCroix(Pos4,Pos,Size,Pos5),
+	Pos6 is Pos-Size,
+	append([[Pos,Pos2],[Pos,Pos3],[Pos,Pos5],[Pos,Pos6]],NewListe,Liste),
 	!,
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
@@ -84,11 +87,11 @@ recupPosMonstre([_|R],Nb,PosMonstres):-
 	recupPosMonstre(R,Nb1,PosMonstres).
 	
   
-verifMonstre([],[],PosMonstre):-
+verifMonstre([],[],[],PosMonstre):-
   flushPosMonstre(PosMonstre,NewPosMonstre),
   nb_setval(posMonstre,NewPosMonstre).
-verifMonstre([Monstre|AutresMonstre],ListeD,ListCoordMonstre):-
-  addPosition(ListCoordMonstre,Monstre,NewCoord,Direction),
+verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre):-
+  addPosition(ListCoordMonstre,Monstre,PosMonstre,NewCoord,Direction),
   append([Direction],NewListeD,ListeD),
   !,
   append(NewCoord,ListCoordMonstre,NewListPosMonstre),
@@ -132,94 +135,93 @@ flushPosMonstre([Monstre|AutresMonstre],PosMonstre):-
 */
 
 % droite = 1 , haut = 2, gauche = 3, bas = 4
-addPosition([],[],[],[]).
-addPosition([],X,NewPos,[]):-
+addPosition([],[],_,[],[]).
+addPosition([],X,_,NewPos,[]):-
   append([[X,X]],[],NewPos).
-addPosition(CoordMonstres,X,NewPos,D):-
+addPosition(CoordMonstres,X,Pos,NewPos,D):-
   member(X,CoordMonstres),
-  D = [5,X],
+  D = [5,Pos],
   !,
   append([[X,X]],[],NewPos).
-addPosition([PosAvant|_],[X,Y],_,NewPos,D):-
+addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
   PosAvant = [XA,YA],
   X1 is X+1,
   XA = X1,
-  D = [3,[X,Y]],
+  D = [3,Pos],
   !,
   append([[PosAvant,[X,Y]]],[],NewPos).
   
-addPosition([PosAvant|_],[X,Y],_,NewPos,D):-
+addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
   PosAvant = [XA,YA],
   X1 is X-1,
   XA = X1,
-  D = [1,[X,Y]],
+  D = [1,Pos],
   !,
   append([[PosAvant,[X,Y]]],[],NewPos).
   
-addPosition([PosAvant|_],[X,Y],_,NewPos,D):-
+addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
   PosAvant = [XA,YA],
   Y1 is Y+1,
   YA = Y1,
-  D = [4,[X,Y]],
+  D = [4,Pos],
   !,
   append([[PosAvant,[X,Y]]],[],NewPos).
 
-addPosition([PosAvant|_],[X,Y],_,NewPos,D):-
+addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
   PosAvant = [XA,YA],
   Y1 is Y-1,
   YA = Y1,
-  D = [2,[X,Y]],
+  D = [2,Pos],
   !,
   append([[PosAvant,[X,Y]]],[],NewPos).
   
-addPosition([_|Reste],Coord,NewPos,D):-
-  addPosition(Reste,Coord,NewPos,D).
+addPosition([_|Reste],Coord,Pos,NewPos,D):-
+  addPosition(Reste,Coord,Pos,NewPos,D).
 
 /*
 % Type de l'élément à la position indiquée
 elemAtPos([X|_], 1, X).
 elemAtPos([_|R], Pos, Element) :- Pos1 is Pos - 1, elemAtPos(R, Pos1, Element).
 */
-
 % Prochaine position possible pour monstre
-possibleMoveMonster(L, [X,Y]) :- elemAtCoord(L, X, Y, 0).
+possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 
 % f(d)
 % Vers la gauche
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 2, X1 is X - 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 3, Y1 is Y + 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 4, X1 is X + 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 1, Y1 is Y - 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 
 % d
 % Vers le haut
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 2, Y1 is Y - 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 3, X1 is X - 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 4, Y1 is Y + 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 1, X1 is X + 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 
 % f(f(d))
 % Vers le bas
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 2, Y1 is Y + 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 3, X1 is X + 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 4, Y1 is Y - 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 1, X1 is X - 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 
 % f(f(f(d)))
 % Vers la droite
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 2, X1 is X + 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + 1,  Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le haut
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 3, Y1 is Y - 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 4, X1 is X - 1, possibleMoveMonster(L, [X1,Y]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
 % Vers le bas
-moveMonster(L, [X,Y], Size, D, Pos1) :- D = 1, Y1 is Y + 1, possibleMoveMonster(L, [X,Y1]),!.
+moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
