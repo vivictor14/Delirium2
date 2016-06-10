@@ -8,7 +8,7 @@
 init_GlobaleMonster(_):- nb_setval(posMonstre,[]).
   
 % Ajoute les zones dangereuses à la liste
-eviterPieges(L, Size, D, L2) :- eviterPieges(L, L, 0, Size, L1), eviterMonstres(L1, Size, D, L2).
+eviterPieges(L, X, Y, Size, PosMineur, L2) :- eviterPieges(L, L, 0, Size, L1), eviterMonstres(L1,X,Y,Size,PosMineur, L2).
 
 eviterPieges(_, [], _, _, []).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 3), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
@@ -27,8 +27,8 @@ eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R
   
 %rajouter elem pour coordonneeMonstre !!!!
 eviterMonstres(Map,X,Y,Size,PosMineur,NewMap):-
-  recupPosMonstre(Map,1,PosMonstres),
-  coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres)
+  recupPosMonstre(Map,0,PosMonstres),
+  coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres),
   lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
@@ -37,12 +37,12 @@ lancerRecupDirection(CoordMonstres,PosMonstres,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListeCoordMonstre),
   verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
 
-coordonneeMonstre([],[]).
+coordonneeMonstre([],_,_,_,_,[]).
 coordonneeMonstre([Pos1|Reste],X,Y,Pos,Size,ListeCord):-
 	posToCoord(X, Y, Pos, Size, Pos1, X1, Y1),
-	append([[X1,Y1]],NewList,ListeCord),
 	!,
-	coordonneeMonstre(Reste,ListeCord).
+	append([[X1,Y1]],NewList,ListeCord),
+	coordonneeMonstre(Reste,X,Y,Pos,Size,NewList).
 
 nouvellePosition(_,_,[],[]).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
@@ -95,9 +95,9 @@ verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre)
   append([Direction],NewListeD,ListeD),
   !,
   append(NewCoord,ListCoordMonstre,NewListPosMonstre),
-  verifMonstre(AutresMonstre,Size,NewListeD,NewListPosMonstre).
-verifMonstre([_|AutresMonstre],Size,ListeD,ListCoordMonstre):-
-  verifMonstre(AutresMonstre,Size,ListeD,ListCoordMonstre).
+  verifMonstre(AutresMonstre,Reste,NewListeD,NewListPosMonstre).
+verifMonstre([_|AutresMonstre],PosMonstre,ListeD,ListCoordMonstre):-
+  verifMonstre(AutresMonstre,PosMonstre,ListeD,ListCoordMonstre).
 
 replace([_|T], 1, X, [X|T]).
 replace([H|T], I, X, [H|R]):- 
