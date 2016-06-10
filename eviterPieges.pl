@@ -73,8 +73,8 @@ nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	Val = [D,Pos],
-	moveMonster(Map, Pos, Size, D, Pos1),
-	append([[Pos,Pos1]],NewListe,Liste),
+	moveMonster(Map, Pos, Size, D, Pos1,Pos2),
+	append([[Pos,Pos1],[Pos,Pos2],NewListe,Liste),
 	!,
 	nouvellePosition(Map,Size,Reste,NewListe).
 
@@ -211,6 +211,7 @@ addPosition([_|Reste],Coord,Pos,NewPos,D):-
 % Prochaine position possible pour monstre
 possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 
+possibleMoveMineur(L,Pos) :- elemAtPos(L, Pos, 3).
 
 /*
   moveMonster(+L, +Pos, +Size, +D, -Pos1)
@@ -218,40 +219,53 @@ possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 */
 % f(d)
 % Vers la gauche
-moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!, Pos2 is Pos + Size, peutMiner(Pos,L,Pos2).
 % Vers le bas
-moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 3, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),! ,Pos2 is Pos + 1, Mod2 is mod(Pos2,Size), Mod2 \=0,peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 3, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 4, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - Size, peutMiner(Pos,L,Pos2).
 % Vers le haut
-moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 1, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - 1, Pos2 > -1, Mod2 is mod(Pos2,Size), Mod2 \=0,  peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 1, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 
 % d
 % Vers le haut
-moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 2, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - 1, Pos2 > -1, Mod2 is mod(Pos2,Size), Mod2 \=0,  peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 2, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 3, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),! , Pos2 is Pos + Size, peutMiner(Pos,L,Pos2).
 % Vers le bas
-moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 4, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos + 1, Mod2 is mod(Pos2,Size), Mod2 \=0,peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 4, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 1, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - Size, peutMiner(Pos,L,Pos2).
 
 % f(f(d))
 % Vers le bas
-moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 2, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos + 1, Mod2 is mod(Pos2,Size), Mod2 \=0,peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 2, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
 % Vers la droite
-moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 3, Pos1 is Pos + 1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - Size, peutMiner(Pos,L,Pos2).
 % Vers le haut
-moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 4, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - 1, Pos2 > -1, Mod2 is mod(Pos2,Size), Mod2 \=0,  peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 4, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 1, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos + Size, peutMiner(Pos,L,Pos2).
 
 % f(f(f(d)))
 % Vers la droite
-moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos + 1,  Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 2, Pos1 is Pos + 1,  Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - Size, peutMiner(Pos,L,Pos2).
 % Vers le haut
-moveMonster(L, Pos, Size, D, Pos1) :- D = 3, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 3, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos - 1, Pos2 > -1, Mod2 is mod(Pos2,Size), Mod2 \=0,  peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 3, Pos1 is Pos - Size, possibleMoveMonster(L, Pos1),!.
 % Vers la gauche
-moveMonster(L, Pos, Size, D, Pos1) :- D = 4, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 4, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!,Pos2 is Pos + Size, peutMiner(Pos,L,Pos2).
 % Vers le bas
-moveMonster(L, Pos, Size, D, Pos1) :- D = 1, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
+moveMonster(L, Pos, Size, D, Pos1, Pos2) :- D = 1, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!,Pos2 is Pos + 1, Mod2 is mod(Pos2,Size), Mod2 \=0,peutMiner(Pos,L,Pos2).
+moveMonster(L, Pos, Size, D, Pos1, Pos) :- D = 1, Pos1 is Pos + Size, possibleMoveMonster(L, Pos1),!.
+
+peutMiner(Pos,L,Pos2):-
+	possibleMoveMineur(L,Pos2),
+	!.
+peutMiner(Pos,L,Pos).
