@@ -12,16 +12,9 @@ eviterPieges(L, X, Y, Pos, Size, L2) :- eviterPieges(L, L, 0, Size, L1), eviterM
 
 eviterPieges(_, [], _, _, []).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 3), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - 1, elemAtPos(L, Pos1, 3), elemAtPos(L, Pos + Size - 1, 2), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 2), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), Pos4 is Pos + 1, eviterPieges(L, R1, Pos4, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 3), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), Pos4 is Pos + 1, eviterPieges(L, R1, Pos4, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 5), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), Pos4 is Pos + 1, eviterPieges(L, R1, Pos4, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 2), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 3), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
-eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + 1, elemAtPos(L, Pos1, 3), Pos2 is Pos1 + Size, elemAtPos(L, Pos2, 5), Pos3 is Pos + Size, elemAtPos(L, Pos3, 0), eviterPieges(L, R1, Pos1, Size, R2).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos1 - Size, elemAtPos(L, Pos2, 3), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2). 
-eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
-eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + Size, elemAtPos(L, Pos2, 22), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2).
+eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 2), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
+eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos1 - Size, elemAtPos(L, Pos2, 2), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2). 
 eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R1, Pos1, Size, R2).
   
 /*
