@@ -118,10 +118,10 @@ getCValue(C,_,_):-
 	
 % trouver les successeur 
 trouverSuccesseurs([X,Y],Laby,Successeurs):-
-	movementD([X,Y],Laby,CoordD),
 	movementH([X,Y],Laby,CoordH),
 	movementG([X,Y],Laby,CoordG),
 	movementB([X,Y],Laby,CoordB),
+	movementD([X,Y],Laby,CoordD),
 	Successeurs = [CoordD,CoordH,CoordG,CoordB].
 
 movementD([X,Y],Laby,CoordD):-
