@@ -26,9 +26,9 @@ eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R
   
   
 %rajouter elem pour coordonneeMonstre !!!!
-eviterMonstres(Map,NewMap):-
+eviterMonstres(Map,X,Y,Size,PosMineur,NewMap):-
   recupPosMonstre(Map,1,PosMonstres),
-  coordonneeMonstre(PosMonstres,CoordMonstres)
+  coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres)
   lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
@@ -38,7 +38,7 @@ lancerRecupDirection(CoordMonstres,PosMonstres,ListeDirectionPrecedent):-
   verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
 
 coordonneeMonstre([],[]).
-coordonneeMonstre([Pos|Reste],ListeCord):-
+coordonneeMonstre([Pos1|Reste],X,Y,Pos,Size,ListeCord):-
 	posToCoord(X, Y, Pos, Size, Pos1, X1, Y1),
 	append([[X1,Y1]],NewList,ListeCord),
 	!,
