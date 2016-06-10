@@ -136,8 +136,7 @@ replace([H|T], I, X, [H|R]):-
 modifCarte(N,[],N):-!.
 modifCarte(Map,[X|Reste],NewMap):-
 	X = [XAvant,XApres],
-	replace(Map,XAvant,0,MapRecursive),
-	replace(MapRecursive,XApres,24,MapSuivante),
+	replace(Map,XApres,24,MapSuivante),
 	!,
 	modifCarte(MapSuivante,Reste,NewMap).
 modifCarte(Map,[_|Reste],NewMap):-
