@@ -24,8 +24,10 @@ eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos + Size, elemAtPos(L, P
 eviterPieges(L, [3|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos + Size, elemAtPos(L, Pos2, 22), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2).
 eviterPieges(L, [E|R1], Pos, Size, [E|R2]) :- Pos1 is Pos + 1, eviterPieges(L, R1, Pos1, Size, R2).
   
-  
-%rajouter elem pour coordonneeMonstre !!!!
+/*
+  eviterMonstres(+Map,+X,+Y,+PosMineur, +Size,-NewMap)
+  Méthode permettant de récupérer une nouvelleListe contenant les monstres à l'état t+1
+*/
 eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
   recupPosMonstre(Map,1,PosMonstres),
   coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres),
@@ -33,9 +35,18 @@ eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
   nouvellePosition(Map,Size,ListeD,ListeP),
   modifCarte(Map,ListeP,NewMap).
   
+/*
+  lancerRecupDirection(+CoordMonstres,+PosMonstres,-ListeDirectionPrecedent)
+  Méthode permettant de récupérer une liste contenant la direction précédente ainsi que la position du monstre lié à cette direction
+*/
 lancerRecupDirection(CoordMonstres,PosMonstres,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListeCoordMonstre),
   verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
+  
+/*
+  coordonneeMonstre(+PosMonstres,+X,+Y,+PosMineur,+Size,-CoordMonstres)
+  Méthode permettant de récupérer les coordonnée X,Y du monstre
+*/
 
 coordonneeMonstre([],_,_,_,_,[]).
 coordonneeMonstre([Pos1|Reste],X,Y,Pos,Size,ListeCord):-
@@ -43,6 +54,10 @@ coordonneeMonstre([Pos1|Reste],X,Y,Pos,Size,ListeCord):-
 	!,
 	append([[X1,Y1]],NewList,ListeCord),
 	coordonneeMonstre(Reste,X,Y,Pos,Size,NewList).
+/*
+  nouvellePosition(+Map,+Size,+ListeD,-ListeP)
+  Méthode permettant de récupérer la position du monstre à l'état t+1
+*/
 
 nouvellePosition(_,_,[],[]).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
@@ -66,6 +81,12 @@ nouvellePosition(Map,Size,[Val|Reste],Liste):-
 nouvellePosition(Map,Size,[_|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,Liste).
 
+/*
+ ajouteCroix(PosEtat1,PosInitiale,Size,NewPos)
+ Vérifie que la position droite et gauche sont possible (si le monstre est tout à droite du labyrinthe il ne peut pas
+ avoir une position = position +1).
+ 
+*/
 ajouteCroix(Pos,_,Size,Pos1):-
 	Pos > -1,
 	Mod is mod(Pos,Size),
@@ -74,7 +95,8 @@ ajouteCroix(Pos,_,Size,Pos1):-
 ajouteCroix(_,PosInitiale,_,PosInitiale).
 
 /*
-  recupPosMonstre(+Map,+Pos,-PosMonstres),
+  recupPosMonstre(+Map,+Pos,-PosMonstres)
+  Renvoie la position du monstre
 */
 recupPosMonstre([],_,[]).
 recupPosMonstre([X|R],Nb,[Nb|R2]):-
@@ -85,7 +107,11 @@ recupPosMonstre([X|R],Nb,[Nb|R2]):-
 recupPosMonstre([_|R],Nb,PosMonstres):-
 	Nb1 is Nb+1,
 	recupPosMonstre(R,Nb1,PosMonstres).
-	
+/*
+  verifMonstre(+CoordMonstre,+PosMonstre,-ListeD,-ListCoordMonstre)
+  Méthode permettant de parcourir toute les positions des monstres et de récupérer leur direction ainsi que set
+  la variable globale posMonstre au position courante.
+*/
   
 verifMonstre([],[],[],PosMonstre):-
   flushPosMonstre(PosMonstre,NewPosMonstre),
@@ -105,6 +131,7 @@ replace([H|T], I, X, [H|R]):-
   
 /*
   modifCarte(+Map,+ListeD,-NewMap)
+  Remplace les positions courante par une case vide et celle au temps t+1 par un monstre.
 */
 modifCarte(N,[],N):-!.
 modifCarte(Map,[X|Reste],NewMap):-
@@ -119,6 +146,7 @@ modifCarte(Map,[_|Reste],NewMap):-
 
 /*
   flushPosMonstre(+PosMonstre,-NewPosMonstre)
+  Méthode permettant de récupérer les coordonnées des monstres au temps t (permet la maj de la variable globale posMonstre).
 */
 
 flushPosMonstre([],[]).
@@ -131,7 +159,9 @@ flushPosMonstre([Monstre|AutresMonstre],PosMonstre):-
     flushPosMonstre(AutresMonstre,PosMonstre).
   
 /*
-  addPosition(+ListPosMontre,+PosMonstre,+Size,-Direction)
+  addPosition(+CoordMonstres,+CoordMonstreCourant,+Pos,-NewPos,-D)
+  Donne la direction du monstre en fonction des coordonnée de la variable globale et des coordonnées du monstre courant.
+  Il donne aussi une liste contenant la position précédente et courante.
 */
 
 % droite = 1 , haut = 2, gauche = 3, bas = 4
@@ -178,14 +208,15 @@ addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
 addPosition([_|Reste],Coord,Pos,NewPos,D):-
   addPosition(Reste,Coord,Pos,NewPos,D).
 
-/*
-% Type de l'élément à la position indiquée
-elemAtPos([X|_], 1, X).
-elemAtPos([_|R], Pos, Element) :- Pos1 is Pos - 1, elemAtPos(R, Pos1, Element).
-*/
+
 % Prochaine position possible pour monstre
 possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
 
+
+/*
+  moveMonster(+L, +Pos, +Size, +D, -Pos1)
+  donne la position au temps t+1 en fonction de la direction du monstre
+*/
 % f(d)
 % Vers la gauche
 moveMonster(L, Pos, Size, D, Pos1) :- D = 2, Pos1 is Pos - 1, Pos1 > -1, Mod is mod(Pos1,Size), Mod \=0, possibleMoveMonster(L, Pos1),!.
