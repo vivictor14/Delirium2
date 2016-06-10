@@ -124,6 +124,7 @@ trouverSuccesseurs([X,Y],Laby,Successeurs):-
 	movementD([X,Y],Laby,CoordD),
 	Successeurs = [CoordD,CoordH,CoordG,CoordB].
 
+% Verifie si le mouvement vers la position est possible
 movementD([X,Y],Laby,CoordD):-
 	XNew is X+1,
 	possibleMove([XNew,Y],Laby,d),
@@ -156,14 +157,16 @@ movementG([X,Y],Laby,CoordG):-
 
 movementG(_,_,[]).	
 
-% Predicats A* spécifique problème
+
 /* 
   getHeuristicValue([+XATester,+YATester],[+XFinal,+YFinal],-V)
+  Calcule la distance euclidienne entre deux coordonnées
 */
 getHeuristicValue([XATester,YATester],[XFinal,YFinal],V):- V is sqrt((XFinal-XATester)*(XFinal-XATester)+(YATester-YFinal)*(YATester-YFinal)).
 
 /*
   extractBestNodeFromOpenList(-Node)
+  Permet l'extraction (get + suppresion de la liste) du meilleur noeud (celui dont la valeur de f est la plus petite)
 */
 %si un seul elem
 extractBestNodeFromOpenList(BestNode):-
@@ -192,6 +195,7 @@ extractBestNodeFromOpenList(CourNode,BestNode,F,BestF,[_|AutreNode]):-
 	
 /*
   getBestNodeFromOpenList(-Node)
+  Permet l'obtention sans suppresion du noeud
 */
 getBestNodeFromOpenList(BestNode):-
 	nb_getval(openList,OpenList),
@@ -211,6 +215,7 @@ getBestNodeFromOpenList(CourNode,BestNode,F,BestF,[_|AutreNode]):-
 
 /*
   extractNodeFromOpen(+State, -Node)
+  Permet l'extraction d'un noeud de la liste open
 */
 extractNodeFromOpen(State,Node):-
 	nb_getval(openList,OpenList),
@@ -225,6 +230,7 @@ extractNodeFromOpen(State,Node,[_|AutreNode]):-
 	
 /*
   getNodeFromOpen(+State, -Node)
+  Permet l'obtention d'un noeud de la liste open
 */
 getNodeFromOpen(State,Node):-
 	nb_getval(openList,OpenList),
@@ -254,6 +260,7 @@ substractFromOpenList(Node,[PasNode|AutreNode],DebutNode):-
 	
 /*
   addNodeToOpen(+Node)
+  Permet l'ajout d'un noeud dans open
 */
 addNodeToOpen(Node):-
 	nb_getval(openList,OpenList),
@@ -262,6 +269,7 @@ addNodeToOpen(Node):-
 
 /*
   extractNodeFromClose(+State, -Node)
+  Permet l'extraction d'un noeud dans close
 */
 extractNodeFromClose(State,Node):-
 	nb_getval(closeList,CloseList),
@@ -276,6 +284,7 @@ extractNodeFromClose(State,Node,[_|AutreNode]):-
 	
 /*
   getNodeFromClose(+State, -Node)
+  Permet d'obtenir un noeud de la liste close
 */
 getNodeFromClose(State,Node):-
 	nb_getval(closeList,CloseList),
@@ -304,6 +313,7 @@ substractFromCloseList(Node,[PasNode|AutreNode],DebutNode):-
 	
 /*
   addNodeToClose(+Node)
+  Ajoute un noeud a la liste close
 */
 addNodeToClose(Node):-
 	nb_getval(closeList,CloseList),
@@ -335,6 +345,7 @@ testBestCostInOpenOrClose([X,Y],Successeur,GPere,Fin):-
 	
 /*
   isInOpenWithBestCost(+Successeur,+GPere)
+  Verifie si le successeur est dans open et a un meilleur coup que le coup contenu dans open.
 */
 isInOpenWithBestCost(Successeur,GPere):-
 	nb_getval(openList,OpenList),
@@ -355,6 +366,7 @@ isInOpenWithBestCost(Successeur,GPere,[_|AutreNode]):-
 	
 /*
   isInCloseWithBestCost(+Successeur,+GPere)
+  Verifie si le successeur est dans open et a un meilleur coup que le coup contenu dans close.
 */
 isInCloseWithBestCost(Successeur,GPere):-
 	nb_getval(closeList,CloseList),
@@ -373,6 +385,7 @@ isInCloseWithBestCost(Successeur,GPere,[_|AutreNode]):-
 	
 /*
   buildPath(+Coordonnee,-Path,-Cout)
+  Permet la création du chemin à partir des coordonnée de fin du chemin.
 */
 buildPath([X,Y],Path,Cout):-
 	getCout([X,Y],Cout),
@@ -398,6 +411,7 @@ buildPath([X,Y],Path,CourPath):-
 	
 /*
   getCout(+Coordonne,-Cout)
+  Permet la récupération du cout
 */
 
 getCout([X,Y],Cout):-
@@ -412,6 +426,7 @@ getCout([X,Y],Cout):-
 	
 /*
   isInOpen(+Coordonnee)
+  Verifie que les coordonnées existent dans open.
 */
 isInOpen(Successeur):-
 	nb_getval(openList,OpenList),
@@ -428,6 +443,7 @@ isInOpen(Successeur,[_|AutreNode]):-
 
 /*
   isInClose(+Coordonnee)
+  Verifie que les coordonnées existent dans close.
 */
 isInClose(Successeur):-
 	nb_getval(closeList,CloseList),
