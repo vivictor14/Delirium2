@@ -1,7 +1,8 @@
 :- module( seDirigerVers, [
 	init_astar/1,
 	seDirigerVers/5,
-	getHeuristicValue/3
+	getHeuristicValue/3,
+	possibleMove/3
 ] ).
 
 :- use_module(fonctions).
@@ -126,7 +127,7 @@ trouverSuccesseurs([X,Y],Laby,Successeurs):-
 
 movementD([X,Y],Laby,CoordD):-
 	XNew is X+1,
-	possibleMove([XNew,Y],Laby,d),
+	possibleMove([XNew,Y],Laby,1),
 	!,
 	CoordD = [XNew,Y].
 
@@ -134,7 +135,7 @@ movementD(_,_,[]).
 	
 movementH([X,Y],Laby,CoordH):-
 	YNew is Y-1,
-	possibleMove([X,YNew],Laby,h),
+	possibleMove([X,YNew],Laby,2),
 	!,
 	CoordH = [X,YNew].
 
@@ -142,7 +143,7 @@ movementH(_,_,[]).
 	
 movementB([X,Y],Laby,CoordB):-
 	YNew is Y+1,
-	possibleMove([X,YNew],Laby,b),
+	possibleMove([X,YNew],Laby,4),
 	!,
 	CoordB = [X,YNew].
 
@@ -150,7 +151,7 @@ movementB(_,_,[]).
 	
 movementG([X,Y],Laby,CoordG):-
 	XNew is X-1,
-	possibleMove([XNew,Y],Laby,g),
+	possibleMove([XNew,Y],Laby,3),
 	!,
 	CoordG = [XNew,Y].
 
@@ -446,8 +447,9 @@ isInClose(Successeur,[_|AutreNode]):-
 possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E =< 2.
 possibleMove([X,Y], Laby,_):- elemAtCoord(Laby,X,Y, E), E = 21.
 
-possibleMove([X,Y],Laby,g):- elemAtCoord(Laby,X,Y,3), XGauche is (X-1), elemAtCoord(Laby,XGauche,Y,0).
-possibleMove([X,Y],Laby,h):- elemAtCoord(Laby,X,Y,3), YHaut is (Y-1), elemAtCoord(Laby,X,YHaut,0).
-possibleMove([X,Y],Laby,b):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,0).
-possibleMove([X,Y],Laby,b):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,4).
-possibleMove([X,Y],Laby,d):- elemAtCoord(Laby,X,Y,3), XDroit is (X+1), elemAtCoord(Laby,XDroit,Y,0).
+possibleMove([X,Y],Laby,3):- elemAtCoord(Laby,X,Y,3), XGauche is (X-1), elemAtCoord(Laby,XGauche,Y,0).
+possibleMove([X,Y],Laby,2):- elemAtCoord(Laby,X,Y,3), YHaut is (Y-1), elemAtCoord(Laby,X,YHaut,0).
+possibleMove([X,Y],Laby,2):- elemAtCoord(Laby,X,Y,3), YHaut is (Y-1), elemAtCoord(Laby,X,YHaut,4).
+possibleMove([X,Y],Laby,4):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,0).
+possibleMove([X,Y],Laby,4):- elemAtCoord(Laby,X,Y,3), YBas is (Y+1), elemAtCoord(Laby,X,YBas,4).
+possibleMove([X,Y],Laby,1):- elemAtCoord(Laby,X,Y,3), XDroit is (X+1), elemAtCoord(Laby,XDroit,Y,0).
