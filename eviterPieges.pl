@@ -34,7 +34,7 @@ eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
 */
 lancerRecupDirection(CoordMonstres,PosMonstres,ListeDirectionPrecedent):-
   nb_getval(posMonstre,ListeCoordMonstre),
-  verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre).
+  verifMonstre(CoordMonstres,PosMonstres,ListeDirectionPrecedent,ListeCoordMonstre,[]).
   
 /*
   coordonneeMonstre(+PosMonstres,+X,+Y,+PosMineur,+Size,-CoordMonstres)
@@ -110,17 +110,17 @@ recupPosMonstre([_|R],Nb,PosMonstres):-
   la variable globale posMonstre au position courante.
 */
   
-verifMonstre([],[],[],PosMonstre):-
+verifMonstre([],[],[],_,PosMonstre):-
   flushPosMonstre(PosMonstre,NewPosMonstre),
   nb_setval(posMonstre,NewPosMonstre).
-verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre):-
+verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre,NewListe):-
   addPosition(ListCoordMonstre,Monstre,PosMonstre,NewCoord,Direction),
   append([Direction],NewListeD,ListeD),
   !,
-  append(NewCoord,ListCoordMonstre,NewListPosMonstre),
-  verifMonstre(AutresMonstre,Reste,NewListeD,NewListPosMonstre).
-verifMonstre([_|AutresMonstre],PosMonstre,ListeD,ListCoordMonstre):-
-  verifMonstre(AutresMonstre,PosMonstre,ListeD,ListCoordMonstre).
+  append([NewCoord],NewListe,NewListCoordMonstre),
+  verifMonstre(AutresMonstre,Reste,NewListeD,ListCoordMonstre,NewListCoordMonstre).
+verifMonstre([_|AutresMonstre],PosMonstre,ListeD,ListCoordMonstre,NewListe):-
+  verifMonstre(AutresMonstre,PosMonstre,ListeD,ListCoordMonstre,NewListe).
 
 replace([_|T], 1, X, [X|T]).
 replace([H|T], I, X, [H|R]):- 
@@ -163,43 +163,47 @@ flushPosMonstre([Monstre|AutresMonstre],PosMonstre):-
 % droite = 1 , haut = 2, gauche = 3, bas = 4
 addPosition([],[],_,[],[]).
 addPosition([],X,_,NewPos,[]):-
-  append([[X,X]],[],NewPos).
+  append([X,X],[],NewPos).
 addPosition(CoordMonstres,X,Pos,NewPos,D):-
   member(X,CoordMonstres),
   D = [5,Pos],
   !,
   append([[X,X]],[],NewPos).
-addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
+addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   PosAvant = [XA,_],
+  Coord = [X,Y],
   X1 is X+1,
   XA = X1,
   D = [3,Pos],
   !,
-  append([[PosAvant,[X,Y]]],[],NewPos).
+  append([PosAvant,[X,Y]],[],NewPos).
   
-addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
+addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   PosAvant = [XA,_],
+  Coord = [X,Y],
   X1 is X-1,
   XA = X1,
   D = [1,Pos],
   !,
-  append([[PosAvant,[X,Y]]],[],NewPos).
+  append([PosAvant,Coord],[],NewPos).
   
-addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
+addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
+  Coord = [X,Y],
   PosAvant = [_,YA],
   Y1 is Y+1,
   YA = Y1,
   D = [4,Pos],
   !,
-  append([[PosAvant,[X,Y]]],[],NewPos).
+  append([PosAvant,Coord],[],NewPos).
 
-addPosition([PosAvant|_],[X,Y],Pos,NewPos,D):-
+addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
+  Coord = [X,Y],
   PosAvant = [_,YA],
   Y1 is Y-1,
   YA = Y1,
   D = [2,Pos],
   !,
-  append([[PosAvant,[X,Y]]],[],NewPos).
+  append([PosAvant,Coord],[],NewPos).
   
 addPosition([_|Reste],Coord,Pos,NewPos,D):-
   addPosition(Reste,Coord,Pos,NewPos,D).
@@ -224,20 +228,20 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos6) :- 
 	D = 3,
 	Pos1 is Pos + Size,
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos+1,
+	Pos5 is Pos1+1,
 	ajouteCroix(Pos5,Pos,Size,Pos6).
 % Vers la droite
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
@@ -248,21 +252,21 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos+1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1+1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1, Pos3, Pos5, Pos6) :- 
 	D = 1, 
 	Pos1 is Pos - Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos-1,
+	Pos2 is Pos1-1,
 	ajouteCroix(Pos2,Pos,Size,Pos3),
-	Pos4 is Pos+1,
+	Pos4 is Pos1+1,
 	ajouteCroix(Pos4,Pos,Size,Pos5),
-	Pos6 is Pos-Size.
+	Pos6 is Pos1-Size.
 % d
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1, Pos3, Pos5, Pos6) :- 
@@ -270,11 +274,11 @@ moveMonster(L, Pos, Size, D, Pos1, Pos3, Pos5, Pos6) :-
 	Pos1 is Pos - Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos-1,
+	Pos2 is Pos1-1,
 	ajouteCroix(Pos2,Pos,Size,Pos3),
-	Pos4 is Pos+1,
+	Pos4 is Pos1+1,
 	ajouteCroix(Pos4,Pos,Size,Pos5),
-	Pos6 is Pos-Size.
+	Pos6 is Pos1-Size.
 % Vers la gauche
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :- 
 	D = 3, 
@@ -284,20 +288,20 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos6) :- 
 	D = 4, 
 	Pos1 is Pos + Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos+1,
+	Pos5 is Pos1+1,
 	ajouteCroix(Pos5,Pos,Size,Pos6).
 % Vers la droite
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :- 
@@ -307,10 +311,10 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos+1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1+1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % f(f(d))
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos6) :-
@@ -318,10 +322,10 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos6) :-
 	Pos1 is Pos + Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos+1,
+	Pos5 is Pos1+1,
 	ajouteCroix(Pos5,Pos,Size,Pos6).
 % Vers la droite
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
@@ -331,21 +335,21 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos+1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1+1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1, Pos3, Pos5, Pos6) :- 
 	D = 4, 
 	Pos1 is Pos - Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos-1,
+	Pos2 is Pos1-1,
 	ajouteCroix(Pos2,Pos,Size,Pos3),
-	Pos4 is Pos+1,
+	Pos4 is Pos1+1,
 	ajouteCroix(Pos4,Pos,Size,Pos5),
-	Pos6 is Pos-Size.
+	Pos6 is Pos1-Size.
 % Vers la gauche
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :- 
 	D = 1, 
@@ -355,10 +359,10 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % f(f(f(d)))
 % Vers la droite
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :- 
@@ -368,21 +372,21 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos+1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1+1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le haut
 moveMonster(L, Pos, Size, D, Pos1, Pos3, Pos5, Pos6) :- 
 	D = 3, 
 	Pos1 is Pos - Size, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos-1,
+	Pos2 is Pos1-1,
 	ajouteCroix(Pos2,Pos,Size,Pos3),
-	Pos4 is Pos+1,
+	Pos4 is Pos1+1,
 	ajouteCroix(Pos4,Pos,Size,Pos5),
-	Pos6 is Pos-Size.
+	Pos6 is Pos1-Size.
 % Vers la gauche
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :- 
 	D = 4, 
@@ -392,18 +396,18 @@ moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos5) :-
 	Mod \=0, 
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos-Size.
+	Pos5 is Pos1-Size.
 % Vers le bas
 moveMonster(L, Pos, Size, D, Pos1, Pos2, Pos4, Pos6) :- 
 	D = 1, 
 	Pos1 is Pos + Size,
 	possibleMoveMonster(L, Pos1),
 	!,
-	Pos2 is Pos+Size,
-	Pos3 is Pos-1,
+	Pos2 is Pos1+Size,
+	Pos3 is Pos1-1,
 	ajouteCroix(Pos3,Pos,Size,Pos4),
-	Pos5 is Pos+1,
+	Pos5 is Pos1+1,
 	ajouteCroix(Pos5,Pos,Size,Pos6).
