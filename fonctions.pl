@@ -1,29 +1,3 @@
-
-Skip to content
-This repository
-
-    Pull requests
-    Issues
-    Gist
-
-    @AnthonyGussy
-
-3
-0
-
-    0
-
-vivictor14/Delirium2
-Code
-Issues 0
-Pull requests 0
-Wiki
-Pulse
-Graphs
-Delirium2/fonctions.pl
-9ef2513 10 minutes ago
-@vivictor14 vivictor14 Correction errer + ajout d'une fonction pour éviter le loop
-57 lines (47 sloc) 3.01 KB
 :- module( fonctions, [
 	meilleureOption/4,
 	posToCoord/7,
@@ -81,4 +55,3 @@ premiereOccurence([[Element|_]|_], Element, X, Y, X, Y) :- !.
 premiereOccurence([[]|R], Element, _, Y0, X, Y) :- Y1 is Y0 + 1, X1 is 0, premiereOccurence(R, Element, X1, Y1, X, Y).
 premiereOccurence([[_|R1]|R2], Element, X0, Y0, X, Y) :- X1 is X0 + 1, premiereOccurence([R1|R2], Element, X1, Y0, X, Y).
 premiereOccurence(Laby, Element, X, Y) :- premiereOccurence(Laby, Element, 0, 0, X, Y).
-
