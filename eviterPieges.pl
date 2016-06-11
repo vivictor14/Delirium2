@@ -61,7 +61,11 @@ nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	Pos4 is Pos-1,
 	ajouteCroix(Pos4,Pos,Size,Pos5),
 	Pos6 is Pos-Size,
-	append([[Pos,Pos2],[Pos,Pos3],[Pos,Pos5],[Pos,Pos6]],NewListe,Liste),
+	Pos7 is Pos2+Size,
+	Pos8 is Pos2-Size,
+	Pos9 is Pos5+Size,
+	Pos10 is Pos5-Size,
+	append([[Pos,Pos2],[Pos,Pos3],[Pos,Pos5],[Pos,Pos6],[Pos,Pos7],[Pos,Pos8],[Pos,Pos9],[Pos,Pos10]],NewListe,Liste),
 	!,
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
