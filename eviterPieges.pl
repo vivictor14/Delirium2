@@ -5,11 +5,20 @@
 
 :- use_module(fonctions).
 
+% Initialiser la variable globale utilisée pour stocker les positions des monstres
+/*
+  init_GlobaleMonster( _ )
+*/
 init_GlobaleMonster(_):- nb_setval(posMonstre,[]).
   
-% Ajoute les zones dangereuses à la liste
+% Ajoute les zones dangereuses à la liste des objets perçus
+/*
+  eviterPieges( +L, +X, +Y, +Pos, +Size, -L2 )
+*/
 eviterPieges(L, X, Y, Pos, Size, L2) :- eviterPieges(L, L, 0, Size, L1), eviterMonstres(L1, X, Y, Pos, Size, L2).
-
+/*
+  eviterPieges( +L, +L1, +Pos, +Size, -L2 )
+*/
 eviterPieges(_, [], _, _, []).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 3), Pos2 is Pos + 1, eviterPieges(L, R1, Pos2, Size, R2).
 eviterPieges(L, [0|R1], Pos, Size, [4|R2]) :- Pos1 is Pos - Size, elemAtPos(L, Pos1, 0), Pos2 is Pos1 - Size, elemAtPos(L, Pos2, 3), Pos3 is Pos + 1, eviterPieges(L, R1, Pos3, Size, R2). 

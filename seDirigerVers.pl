@@ -1,15 +1,15 @@
 :- module( seDirigerVers, [
 	init_astar/1,
-	seDirigerVers/5,
+	seDirigerVers/4,
 	getHeuristicValue/3,
 	possibleMove/3
 ] ).
 
 :- use_module(fonctions).
 
-seDirigerVers(Coordonnee,Fin,Laby,Cout,Action):-
+seDirigerVers(Coordonnee,Fin,Laby,Action):-
 	initialisationGlobale(Coordonnee,Fin),
-	a_star(Coordonnee,Fin,Laby,Path,Cout),
+	a_star(Coordonnee,Fin,Laby,Path),
 	!,
 	getSuite(Coordonnee,Path,Suite),
 	getAction(Coordonnee,Suite,Action).
@@ -53,16 +53,16 @@ a_star(_,_,_,_,_):-
 	fail.
 	
 % etat final atteint par -1
-a_star([X,Y],_,Laby,Path,Cout):-
+a_star([X,Y],_,Laby,Path):-
 	elemAtCoord(Laby, X, Y, E),
 	E = -1,
-	buildPath([X,Y],Path,Cout).
+	buildPath([X,Y],Path).
 	
 % etat final atteint
-a_star([X,Y],[X,Y],_,Path,Cout):-
-	buildPath([X,Y],Path,Cout).
+a_star([X,Y],[X,Y],_,Path):-
+	buildPath([X,Y],Path).
 
-a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
+a_star([X,Y],[XFinal,YFinal],Laby,Path):-
 	extractBestNodeFromOpenList(Node),
 	addNodeToClose(Node),
 	Node = [[X,Y],G,_,_],
@@ -70,7 +70,7 @@ a_star([X,Y],[XFinal,YFinal],Laby,Path,Cout):-
 	ajouterChemin([X,Y],Successeurs,[XFinal,YFinal],G,Laby),
 	getBestNodeFromOpenList(BestNode),
 	BestNode = [NewState,_,_,_],
-	a_star(NewState,[XFinal,YFinal],Laby,Path,Cout).
+	a_star(NewState,[XFinal,YFinal],Laby,Path).
 	
 ajouterChemin(_,[],_,_,_):-
 	!.
@@ -375,8 +375,7 @@ isInCloseWithBestCost(Successeur,GPere,[_|AutreNode]):-
 /*
   buildPath(+Coordonnee,-Path,-Cout)
 */
-buildPath([X,Y],Path,Cout):-
-	getCout([X,Y],Cout),
+buildPath([X,Y],Path):-
 	buildPath([X,Y],PathSansPere,[]),
 	append([[X,Y]],PathSansPere,Path).
 
@@ -397,19 +396,7 @@ buildPath([X,Y],Path,CourPath):-
 	buildPath(Pere,Path,NewPath).
 	
 	
-/*
-  getCout(+Coordonne,-Cout)
-*/
 
-getCout([X,Y],Cout):-
-	isInOpen([X,Y]),
-	getNodeFromOpen([X,Y],Node),
-	Node = [_,_,Cout,_].
-	
-getCout([X,Y],Cout):-
-	isInClose([X,Y]),
-	getNodeFromClose([X,Y],Node),
-	Node = [_,_,Cout,_].
 	
 /*
   isInOpen(+Coordonnee)
