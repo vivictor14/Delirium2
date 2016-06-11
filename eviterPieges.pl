@@ -26,9 +26,6 @@ eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
   coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres),
   lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
-  write(ListeD),
-  nb_getval(posMonstre,EEE),
-  write(EEE),
   modifCarte(Map,ListeP,NewMap).
   
 /*
@@ -114,6 +111,7 @@ recupPosMonstre([_|R],Nb,PosMonstres):-
 */
   
 verifMonstre([],[],[],_,PosMonstre):-
+  write(PosMonstre),
   flushPosMonstre(PosMonstre,NewPosMonstre),
   nb_setval(posMonstre,NewPosMonstre).
 verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre,NewListe):-
@@ -171,7 +169,7 @@ addPosition(CoordMonstres,X,Pos,NewPos,D):-
   member(X,CoordMonstres),
   D = [5,Pos],
   !,
-  append([[X,X]],[],NewPos).
+  append([X,X],[],NewPos).
 addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   PosAvant = [XA,YA],
   Coord = [X,Y],
@@ -218,7 +216,6 @@ addPosition([_|Reste],Coord,Pos,NewPos,D):-
 
 % Prochaine position possible pour monstre
 possibleMoveMonster(L, Pos) :- elemAtPos(L, Pos, 0).
-
 
 /*
   moveMonster(+L, +Pos, +Size, +D, -Pos1)
