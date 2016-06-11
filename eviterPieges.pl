@@ -26,6 +26,9 @@ eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
   coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres),
   lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
+  write(ListeD),
+  nb_getval(posMonstre,EEE),
+  write(EEE),
   modifCarte(Map,ListeP,NewMap).
   
 /*
@@ -119,7 +122,7 @@ verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre,
   !,
   append([NewCoord],NewListe,NewListCoordMonstre),
   verifMonstre(AutresMonstre,Reste,NewListeD,ListCoordMonstre,NewListCoordMonstre).
-verifMonstre([_|AutresMonstre],PosMonstre,ListeD,ListCoordMonstre,NewListe):-
+verifMonstre([_|AutresMonstre],[_|Reste],ListeD,ListCoordMonstre,NewListe):-
   verifMonstre(AutresMonstre,PosMonstre,ListeD,ListCoordMonstre,NewListe).
 
 replace([_|T], 1, X, [X|T]).
@@ -170,18 +173,20 @@ addPosition(CoordMonstres,X,Pos,NewPos,D):-
   !,
   append([[X,X]],[],NewPos).
 addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
-  PosAvant = [XA,_],
+  PosAvant = [XA,YA],
   Coord = [X,Y],
   X1 is X+1,
+  YA = Y,
   XA = X1,
   D = [3,Pos],
   !,
   append([PosAvant,[X,Y]],[],NewPos).
   
 addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
-  PosAvant = [XA,_],
+  PosAvant = [XA,YA],
   Coord = [X,Y],
   X1 is X-1,
+  YA = Y,
   XA = X1,
   D = [1,Pos],
   !,
@@ -189,19 +194,21 @@ addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   
 addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   Coord = [X,Y],
-  PosAvant = [_,YA],
+  PosAvant = [XA,YA],
   Y1 is Y+1,
   YA = Y1,
-  D = [4,Pos],
+  XA = X,
+  D = [2,Pos],
   !,
   append([PosAvant,Coord],[],NewPos).
 
 addPosition([PosAvant|_],Coord,Pos,NewPos,D):-
   Coord = [X,Y],
-  PosAvant = [_,YA],
+  PosAvant = [XA,YA],
   Y1 is Y-1,
   YA = Y1,
-  D = [2,Pos],
+  XA = X,
+  D = [4,Pos],
   !,
   append([PosAvant,Coord],[],NewPos).
   
