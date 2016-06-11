@@ -1,29 +1,4 @@
 
-Skip to content
-This repository
-
-    Pull requests
-    Issues
-    Gist
-
-    @AnthonyGussy
-
-3
-0
-
-    0
-
-vivictor14/Delirium2
-Code
-Issues 0
-Pull requests 0
-Wiki
-Pulse
-Graphs
-Delirium2/fonctions.pl
-9ef2513 10 minutes ago
-@vivictor14 vivictor14 Correction errer + ajout d'une fonction pour éviter le loop
-57 lines (47 sloc) 3.01 KB
 :- module( fonctions, [
 	meilleureOption/4,
 	posToCoord/7,
