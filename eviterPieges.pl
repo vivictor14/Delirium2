@@ -26,8 +26,7 @@ eviterMonstres(Map,X,Y,PosMineur, Size,NewMap):-
   coordonneeMonstre(PosMonstres,X,Y,PosMineur,Size,CoordMonstres),
   lancerRecupDirection(CoordMonstres,PosMonstres,ListeD),
   nouvellePosition(Map,Size,ListeD,ListeP),
-  modifCarte(Map,ListeP,NewMap),
-  write(NewMap).
+  modifCarte(Map,ListeP,NewMap).
   
 /*
   lancerRecupDirection(+CoordMonstres,+PosMonstres,-ListeDirectionPrecedent)
@@ -71,10 +70,6 @@ nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	nouvellePosition(Map,Size,Reste,NewListe).
 nouvellePosition(Map,Size,[Val|Reste],Liste):-
 	Val = [D,Pos],
-	write(Map),
-	write(Size),
-	write(Val),
-
 	moveMonster(Map, Pos, Size, D, Pos1, Pos2, Pos3, Pos4),
 	append([[Pos,Pos1],[Pos,Pos2],[Pos,Pos3],[Pos,Pos4]],NewListe,Liste),
 	!,
