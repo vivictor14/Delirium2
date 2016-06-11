@@ -111,7 +111,6 @@ recupPosMonstre([_|R],Nb,PosMonstres):-
 */
   
 verifMonstre([],[],[],_,PosMonstre):-
-  write(PosMonstre),
   flushPosMonstre(PosMonstre,NewPosMonstre),
   nb_setval(posMonstre,NewPosMonstre).
 verifMonstre([Monstre|AutresMonstre],[PosMonstre|Reste],ListeD,ListCoordMonstre,NewListe):-
