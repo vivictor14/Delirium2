@@ -21,7 +21,7 @@ init(_) :- nb_setval(labyrinthe, [[-1]]), nb_setval(sortie, []), nb_setval(posit
 */
 
 % Mettre à jour le labyrinthe avant de choisir le mouvement
-move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- eviterPieges(L, X, Y, Pos, Size, L1), nb_getval(labyrinthe, Laby), avoidLoop(_), updateLaby(Laby, L1, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), write(Laby1), move(X, Y, CGE, Laby1, Action), updateMovements([X, Y]).
+move(L, _, X, Y, Pos, Size, CGE, _, _, _, _, Action) :- eviterPieges(L, X, Y, Pos, Size, L1), nb_getval(labyrinthe, Laby), avoidLoop(_), updateLaby(Laby, L1, X, Y, Pos, Size), nb_getval(labyrinthe, Laby1), move(X, Y, CGE, Laby1, Action), updateMovements([X, Y]).
 
 % S'arrêter sur la sortie
 move(X, Y, 1, _, Action) :- nb_getval(sortie, Coord), [X, Y] = Coord, Action is 0, write('J attend'), nl, !.

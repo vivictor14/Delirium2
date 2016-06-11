@@ -22,9 +22,9 @@ errer(X, Y, Laby, Action) :- Y1 is Y + 1, elemAtCoord(Laby, X, Y1, 1), Action is
 % Trouve un endroit atteignable en partant du coin inférieur droit du labyrinthe
 endroitAtteignable(X, Y, Laby, Action) :- X0 is X + 2, Y0 is Y + 2, coordLastElement(Laby, XL, YL), endroitAtteignable(X, Y, Laby, X0, Y0, 20, XL, YL, Action), !.
 
-endroitAtteignable(X, Y, Laby, X0, Y0, _, _, _, Action) :- elemAtCoord(Laby, X0, Y0, E), destinationPossible(E), seDirigerVers([X, Y], [X0, Y0], Laby, _, Action), write(1), write(' '), write(X0), write(' '), write(Y0), nl.
-endroitAtteignable(X, Y, Laby, X0, Y0, DistMax, XL, YL, Action) :- X1 is X0 + 1, X1 < (X + DistMax), X1 < XL, write(2), write(' '), write(X0), write(' '), write(Y0), nl, !, endroitAtteignable(X, Y, Laby, X1, Y0, DistMax, XL, YL, Action).
-endroitAtteignable(X, Y, Laby, X0, Y0, DistMax, XL, YL, Action) :- Y1 is Y0 + 1, Y1 < (Y + DistMax), Y1 < YL, X1 is X + 2, write(3), write(' '), write(X0), write(' '), write(Y0), nl, endroitAtteignable(X, Y, Laby, X1, Y1, DistMax, XL, YL, Action).
+endroitAtteignable(X, Y, Laby, X0, Y0, _, _, _, Action) :- elemAtCoord(Laby, X0, Y0, E), destinationPossible(E), seDirigerVers([X, Y], [X0, Y0], Laby, _, Action).
+endroitAtteignable(X, Y, Laby, X0, Y0, DistMax, XL, YL, Action) :- X1 is X0 + 1, X1 < (X + DistMax), X1 < XL, !, endroitAtteignable(X, Y, Laby, X1, Y0, DistMax, XL, YL, Action).
+endroitAtteignable(X, Y, Laby, X0, Y0, DistMax, XL, YL, Action) :- Y1 is Y0 + 1, Y1 < (Y + DistMax), Y1 < YL, X1 is X + 2, endroitAtteignable(X, Y, Laby, X1, Y1, DistMax, XL, YL, Action).
 
 
 destinationPossible(E) :- E < 3.
