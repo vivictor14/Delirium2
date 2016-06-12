@@ -125,6 +125,7 @@ trouverSuccesseurs([X,Y],Laby,Successeurs):-
 	movementD([X,Y],Laby,CoordD),
 	Successeurs = [CoordD,CoordH,CoordG,CoordB].
 
+% verifie que le mouvement est possible
 movementD([X,Y],Laby,CoordD):-
 	XNew is X+1,
 	possibleMove([XNew,Y],Laby,1),
@@ -160,11 +161,13 @@ movementG(_,_,[]).
 % Predicats A* spécifique problème
 /* 
   getHeuristicValue([+XATester,+YATester],[+XFinal,+YFinal],-V)
+  calcul l'heuristique dans notre cas la distance euclidienne entre le point de départ et d'arrivé
 */
 getHeuristicValue([XATester,YATester],[XFinal,YFinal],V):- V is sqrt((XFinal-XATester)*(XFinal-XATester)+(YATester-YFinal)*(YATester-YFinal)).
 
 /*
   extractBestNodeFromOpenList(-Node)
+  recupere le noeud avec le cout le moins élevé et l'extrait (prend la valeur et l'enleve de la liste)
 */
 %si un seul elem
 extractBestNodeFromOpenList(BestNode):-
@@ -193,6 +196,7 @@ extractBestNodeFromOpenList(CourNode,BestNode,F,BestF,[_|AutreNode]):-
 	
 /*
   getBestNodeFromOpenList(-Node)
+  recupere le noeud avec le cout le moins eleve (sans l'extraire)
 */
 getBestNodeFromOpenList(BestNode):-
 	nb_getval(openList,OpenList),
@@ -212,6 +216,7 @@ getBestNodeFromOpenList(CourNode,BestNode,F,BestF,[_|AutreNode]):-
 
 /*
   extractNodeFromOpen(+State, -Node)
+  extrait le noeud contenant les coordonnée fournit en paramètre (recupération et suppression de la liste)
 */
 extractNodeFromOpen(State,Node):-
 	nb_getval(openList,OpenList),
@@ -226,6 +231,7 @@ extractNodeFromOpen(State,Node,[_|AutreNode]):-
 	
 /*
   getNodeFromOpen(+State, -Node)
+  récupère le noeud contenant les coordonnée fournit en paramètre
 */
 getNodeFromOpen(State,Node):-
 	nb_getval(openList,OpenList),
@@ -255,6 +261,7 @@ substractFromOpenList(Node,[PasNode|AutreNode],DebutNode):-
 	
 /*
   addNodeToOpen(+Node)
+  ajoute le noeud à la liste open
 */
 addNodeToOpen(Node):-
 	nb_getval(openList,OpenList),
@@ -263,6 +270,7 @@ addNodeToOpen(Node):-
 
 /*
   extractNodeFromClose(+State, -Node)
+  extrait le noeud contenant les coordonnée fournit en paramètre
 */
 extractNodeFromClose(State,Node):-
 	nb_getval(closeList,CloseList),
@@ -277,6 +285,7 @@ extractNodeFromClose(State,Node,[_|AutreNode]):-
 	
 /*
   getNodeFromClose(+State, -Node)
+  recupere le noeud contenant les coordonnée fournit en paramètre
 */
 getNodeFromClose(State,Node):-
 	nb_getval(closeList,CloseList),
@@ -305,6 +314,7 @@ substractFromCloseList(Node,[PasNode|AutreNode],DebutNode):-
 	
 /*
   addNodeToClose(+Node)
+  ajoute le noeud a la liste close
 */
 addNodeToClose(Node):-
 	nb_getval(closeList,CloseList),
@@ -313,6 +323,8 @@ addNodeToClose(Node):-
 	
 /*
   testBestCostInOpenOrClose(+Pere,+Successeur,+GPere,+Fin)
+  vérifie que le successeur fournit en parametre existe dans une des deux liste (close ou open) et qu'il a un meilleur
+  cout que le cout dans la liste
 */
 testBestCostInOpenOrClose([X,Y],Successeur,GPere,Fin):-
 	isInOpenWithBestCost(Successeur,GPere),
@@ -336,6 +348,7 @@ testBestCostInOpenOrClose([X,Y],Successeur,GPere,Fin):-
 	
 /*
   isInOpenWithBestCost(+Successeur,+GPere)
+  regarde si le successeur est dans open avec un meilleur cout
 */
 isInOpenWithBestCost(Successeur,GPere):-
 	nb_getval(openList,OpenList),
@@ -356,6 +369,7 @@ isInOpenWithBestCost(Successeur,GPere,[_|AutreNode]):-
 	
 /*
   isInCloseWithBestCost(+Successeur,+GPere)
+  regarde si le successeur est dans close avec un meilleur cout
 */
 isInCloseWithBestCost(Successeur,GPere):-
 	nb_getval(closeList,CloseList),
@@ -374,6 +388,7 @@ isInCloseWithBestCost(Successeur,GPere,[_|AutreNode]):-
 	
 /*
   buildPath(+Coordonnee,-Path,-Cout)
+  construit le chemin en remontant grâce à la coordonnée fournit en paramètre
 */
 buildPath([X,Y],Path):-
 	buildPath([X,Y],PathSansPere,[]),
@@ -400,6 +415,7 @@ buildPath([X,Y],Path,CourPath):-
 	
 /*
   isInOpen(+Coordonnee)
+  vérifie que le successeur se trouve dans open
 */
 isInOpen(Successeur):-
 	nb_getval(openList,OpenList),
@@ -416,6 +432,7 @@ isInOpen(Successeur,[_|AutreNode]):-
 
 /*
   isInClose(+Coordonnee)
+  verifie que le successeur se trouve dans close
 */
 isInClose(Successeur):-
 	nb_getval(closeList,CloseList),
