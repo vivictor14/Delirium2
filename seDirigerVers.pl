@@ -246,6 +246,7 @@ getNodeFromOpen(State,Node,[_|AutreNode]):-
 	
 /*
   substractFromOpenList(+Node)
+  enleve la node de la liste open
 */
 substractFromOpenList(Node):-
 	nb_getval(openList,OpenList),
@@ -299,6 +300,7 @@ getNodeFromClose(State,Node,[_|AutreNode]):-
 
 /*
   substractFromCloseList(+Node)
+  enleve la node de la liste close
 */
 substractFromCloseList(Node):-
 	nb_getval(closeList,CloseList),
